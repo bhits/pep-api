@@ -1,5 +1,6 @@
 package gov.samhsa.c2s.pep.service.dto;
 
+import gov.samhsa.c2s.pep.infrastructure.dto.DSSResponse;
 import lombok.Builder;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotBlank;
@@ -13,4 +14,11 @@ public class AccessResponseDto {
 
     @NotBlank
     private String segmentedDocumentEncoding;
+
+    public static AccessResponseDto from(DSSResponse dssResponse){
+        return AccessResponseDto.builder()
+                .segmentedDocument(dssResponse.getSegmentedDocument())
+                .segmentedDocumentEncoding(dssResponse.getEncoding())
+                .build();
+    }
 }

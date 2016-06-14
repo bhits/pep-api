@@ -26,8 +26,8 @@ public class SecurityConfig {
                 if (securityProperties.isRequireSsl()) {
                     http.requiresChannel().anyRequest().requiresSecure();
                 }
+                // FIXME (BU): add security configuration
                 http.authorizeRequests().anyRequest().permitAll();
-
             }
         };
     }

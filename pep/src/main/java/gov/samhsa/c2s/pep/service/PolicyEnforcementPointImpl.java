@@ -7,7 +7,7 @@ import gov.samhsa.c2s.pep.infrastructure.dto.XacmlResponseDto;
 import gov.samhsa.c2s.pep.infrastructure.dto.XacmlResult;
 import gov.samhsa.c2s.pep.service.dto.AccessRequestDto;
 import gov.samhsa.c2s.pep.service.dto.AccessResponseDto;
-import gov.samhsa.c2s.pep.service.exception.AccessDeniedException;
+import gov.samhsa.c2s.pep.service.exception.DocumentNotFoundException;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,7 +43,7 @@ public class PolicyEnforcementPointImpl implements PolicyEnforcementPoint {
         Optional.of(xacmlResponse)
                 .map(XacmlResponseDto::getPdpDecision)
                 .filter(PERMIT::equalsIgnoreCase)
-                .orElseThrow(AccessDeniedException::new);
+                .orElseThrow(DocumentNotFoundException::new);
 
         val dssRequest = DSSRequest.builder()
                 .document(accessRequest.getDocument())
@@ -52,10 +52,7 @@ public class PolicyEnforcementPointImpl implements PolicyEnforcementPoint {
                 .build();
 
         val dssResponse = dssService.segmentDocument(dssRequest);
-        val accessResponse = AccessResponseDto.builder()
-                .segmentedDocument(dssResponse.getSegmentedDocument())
-                .segmentedDocumentEncoding(dssResponse.getEncoding())
-                .build();
+        val accessResponse = AccessResponseDto.from(dssResponse);
         return accessResponse;
     }
 }
