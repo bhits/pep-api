@@ -25,8 +25,10 @@
  ******************************************************************************/
 package gov.samhsa.c2s.pep.infrastructure.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.NotNull;
@@ -40,6 +42,8 @@ import java.util.UUID;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @XmlRootElement(name = "xacmlResult")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class XacmlResult {
