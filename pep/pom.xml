@@ -23,6 +23,7 @@
 		<java.version>1.8</java.version>
 		<spring.cloud.version>Brixton.RELEASE</spring.cloud.version>
 		<lombok.version>1.16.6</lombok.version>
+		<c2s.common-libraries.version>1.2.0</c2s.common-libraries.version>
 	</properties>
 
 	<dependencies>
@@ -59,6 +60,12 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>gov.samhsa.mhc</groupId>
+			<artifactId>common-unit</artifactId>
+			<version>${c2s.common-libraries.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
