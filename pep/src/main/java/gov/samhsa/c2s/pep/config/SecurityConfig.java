@@ -3,10 +3,13 @@ package gov.samhsa.c2s.pep.config;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
+
+import static gov.samhsa.mhc.common.oauth2.OAuth2ScopeUtils.hasScope;
 
 @Configuration
 public class SecurityConfig {
@@ -26,8 +29,9 @@ public class SecurityConfig {
                 if (securityProperties.isRequireSsl()) {
                     http.requiresChannel().anyRequest().requiresSecure();
                 }
-                // FIXME (BU): add security configuration
-                http.authorizeRequests().anyRequest().permitAll();
+                http.authorizeRequests()
+                        .antMatchers(HttpMethod.POST, "/access/**").access(hasScope("pep.patient_read"))
+                        .anyRequest().denyAll();
             }
         };
     }
