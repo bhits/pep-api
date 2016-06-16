@@ -1,4 +1,4 @@
-package gov.samhsa.c2s.pep.service.dto;
+package gov.samhsa.c2s.pep.web;
 
 import gov.samhsa.c2s.pep.infrastructure.dto.XacmlRequestDto;
 import lombok.AllArgsConstructor;
@@ -6,16 +6,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.NotEmpty;
-import org.hibernate.validator.valuehandling.UnwrapValidatedValue;
 
 import javax.validation.constraints.NotNull;
-import java.util.Optional;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AccessRequestDto {
+public class AccessRequestDtoForTest {
     @NotNull
     private XacmlRequestDto xacmlRequest;
 
@@ -23,6 +21,5 @@ public class AccessRequestDto {
     private byte[] document;
 
     @NotNull
-    @UnwrapValidatedValue(false)
-    private Optional<String> documentEncoding = Optional.empty();
+    private String documentEncoding;
 }

@@ -6,7 +6,9 @@ import gov.samhsa.c2s.pep.infrastructure.dto.*;
 import gov.samhsa.c2s.pep.service.dto.AccessRequestDto;
 import lombok.val;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -24,6 +26,9 @@ import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PolicyEnforcementPointImplTest {
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     @Mock
     private ContextHandlerService contextHandler;
