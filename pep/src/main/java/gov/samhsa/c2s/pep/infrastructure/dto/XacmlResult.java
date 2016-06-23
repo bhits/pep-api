@@ -25,10 +25,7 @@
  ******************************************************************************/
 package gov.samhsa.c2s.pep.infrastructure.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.NotNull;
@@ -41,7 +38,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @XmlRootElement(name = "xacmlResult")
@@ -61,6 +58,7 @@ public class XacmlResult {
 
     @NotNull
     @XmlElement(name = "pdpObligation")
+    @Singular
     private List<String> pdpObligations = new ArrayList<>();
 
     private String patientId;

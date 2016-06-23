@@ -1,9 +1,6 @@
 package gov.samhsa.c2s.pep.infrastructure.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.NotNull;
@@ -19,5 +16,6 @@ public class XacmlResponseDto {
     private String pdpDecision;
 
     @NotNull
+    @Singular
     private List<String> pdpObligations = new ArrayList<>();
 }

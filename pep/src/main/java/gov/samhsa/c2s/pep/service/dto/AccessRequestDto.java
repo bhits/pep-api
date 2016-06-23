@@ -1,6 +1,8 @@
 package gov.samhsa.c2s.pep.service.dto;
 
+import gov.samhsa.c2s.pep.infrastructure.dto.DSSRequest;
 import gov.samhsa.c2s.pep.infrastructure.dto.XacmlRequestDto;
+import gov.samhsa.c2s.pep.infrastructure.dto.XacmlResult;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,6 +11,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 import org.hibernate.validator.valuehandling.UnwrapValidatedValue;
 
 import javax.validation.constraints.NotNull;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 @Data
@@ -25,4 +28,12 @@ public class AccessRequestDto {
     @NotNull
     @UnwrapValidatedValue(false)
     private Optional<String> documentEncoding = Optional.empty();
+
+    public DSSRequest toDSSRequest(XacmlResult xacmlResult) {
+        return DSSRequest.builder()
+                .document(getDocument())
+                .documentEncoding(getDocumentEncoding().orElse(StandardCharsets.UTF_8.name()))
+                .xacmlResult(xacmlResult.toBuilder().build())
+                .build();
+    }
 }
