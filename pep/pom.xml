@@ -58,6 +58,7 @@
         <c2s.common-libraries.version>1.2.0</c2s.common-libraries.version>
         <!-- Test -->
         <jsonpath.version>2.2.0</jsonpath.version>
+        <docker.maven.version>0.4.3</docker.maven.version>
     </properties>
 
     <dependencies>
@@ -136,6 +137,25 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>${docker.maven.version}</version>
+                <configuration>
+                    <imageName>bhits/${project.artifactId}</imageName>
+                    <dockerDirectory>src/main/docker</dockerDirectory>
+                    <buildArgs>
+                        <finalName>${project.build.finalName}.jar</finalName>
+                    </buildArgs>
+                    <resources>
+                        <resource>
+                            <targetPath>/</targetPath>
+                            <directory>${project.build.directory}</directory>
+                            <include>${project.build.finalName}.jar</include>
+                        </resource>
+                    </resources>
+                </configuration>
             </plugin>
         </plugins>
     </build>
