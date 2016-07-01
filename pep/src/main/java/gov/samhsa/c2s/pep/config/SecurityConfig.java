@@ -31,6 +31,7 @@ public class SecurityConfig {
                 }
                 http.authorizeRequests()
                         .antMatchers(HttpMethod.POST, "/access/**").access(hasScope("pep.patient_read"))
+                        .antMatchers(HttpMethod.POST, "/documents/**").access(hasScope("pep.patient_read"))
                         .anyRequest().denyAll();
             }
         };
