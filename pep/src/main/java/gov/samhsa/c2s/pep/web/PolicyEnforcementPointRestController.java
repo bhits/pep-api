@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.security.Principal;
 
 @RestController
 public class PolicyEnforcementPointRestController {
@@ -24,7 +25,7 @@ public class PolicyEnforcementPointRestController {
     }
 
     @RequestMapping(value = "/documents", method = RequestMethod.POST)
-    public DocumentsResponseDto getDocuments(@Valid @RequestBody DocumentRequestDto documentRequestDto) {
-        return policyEnforcementPoint.getCCDDocuments(documentRequestDto);
+    public DocumentsResponseDto getDocuments(@Valid @RequestBody DocumentRequestDto documentRequestDto, Principal principal) {
+        return policyEnforcementPoint.getCCDDocuments(principal.getName(), documentRequestDto);
     }
 }

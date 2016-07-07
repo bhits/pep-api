@@ -7,6 +7,6 @@ import gov.samhsa.c2s.pep.service.dto.DocumentsResponseDto;
 
 public interface PolicyEnforcementPoint {
     AccessResponseDto accessDocument(AccessRequestDto accessRequest);
-    DocumentsResponseDto getCCDDocuments(DocumentRequestDto documentRequestDto);
+    DocumentsResponseDto getCCDDocuments(String username, DocumentRequestDto documentRequestDto);
 
 }

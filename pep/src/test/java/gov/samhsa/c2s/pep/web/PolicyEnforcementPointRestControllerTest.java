@@ -56,7 +56,7 @@ public class PolicyEnforcementPointRestControllerTest {
         // Arrange
         val recipientNpi = "recipientNpi";
         val intermediaryNpi = "intermediaryNpi";
-        val purposeOfUse = SubjectPurposeOfUse.HEALTHCARE_TREATMENT;
+        val purposeOfUse = SubjectPurposeOfUse.TREATMENT;
         val extension = "extension";
         val root = "root";
         val patientId = PatientIdDto.builder().extension(extension).root(root).build();
@@ -102,7 +102,7 @@ public class PolicyEnforcementPointRestControllerTest {
         // Arrange
         val recipientNpi = "recipientNpi";
         val intermediaryNpi = "intermediaryNpi";
-        val purposeOfUse = SubjectPurposeOfUse.HEALTHCARE_TREATMENT;
+        val purposeOfUse = SubjectPurposeOfUse.TREATMENT;
         val extension = "extension";
         val root = "root";
         val patientId = PatientIdDto.builder().extension(extension).root(root).build();

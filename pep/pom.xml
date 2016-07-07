@@ -56,6 +56,7 @@
         <spring.cloud.version>Brixton.RELEASE</spring.cloud.version>
         <lombok.version>1.16.6</lombok.version>
         <c2s.common-libraries.version>1.2.0</c2s.common-libraries.version>
+        <saxon-HE.version>9.6.0-3</saxon-HE.version>
         <!-- Test -->
         <jsonpath.version>2.2.0</jsonpath.version>
         <docker.maven.version>0.4.3</docker.maven.version>
@@ -111,6 +112,21 @@
             <artifactId>common-unit</artifactId>
             <version>${c2s.common-libraries.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>gov.samhsa.mhc</groupId>
+            <artifactId>document-converter</artifactId>
+            <version>${c2s.common-libraries.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.saxon</groupId>
+            <artifactId>Saxon-HE</artifactId>
+            <version>${saxon-HE.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>gov.samhsa.mhc</groupId>
+            <artifactId>document-accessor</artifactId>
+            <version>${c2s.common-libraries.version}</version>
         </dependency>
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>

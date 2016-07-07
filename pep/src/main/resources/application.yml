@@ -5,10 +5,13 @@ logging:
 info:
   component: PEP API
 pep:
+  providers:
+    users:
+      provider@gmail.com: 1568730463
   iexhub:
       url: https://localhost:8443/iexhub/services/GetPatientData/ccd
       param-key: ssoauth
-      param-value-suffix: PatientId=MRN&LastName=&FirstName=&MiddleName=&DateOfBirth=&PatientGender=&MotherMaidenName=&AddressStreet=&AddressCity=&AddressState=&AddressPostalCode=&OtherIDsScopingOrganization=&StartDate=&EndDate=
+      param-value-suffix: PatientId=PATIENT_ID_VALUE&LastName=&FirstName=&MiddleName=&DateOfBirth=&PatientGender=&MotherMaidenName=&AddressStreet=&AddressCity=&AddressState=&AddressPostalCode=&OtherIDsScopingOrganization=&StartDate=&EndDate=
 eureka:
   instance:
     instance-id: ${spring.cloud.client.hostname}:${spring.application.name}:${spring.application.instance_id:${random.value}}

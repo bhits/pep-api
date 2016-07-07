@@ -19,12 +19,12 @@ import java.util.Optional;
 @AllArgsConstructor
 public class DocumentRequestDto {
 
-    @NotBlank
-    private String recipientNpi;
-
     @NotNull
     private SubjectPurposeOfUse purposeOfUse;
 
     @NotNull
     private String mrn;
+
+    @NotNull
+    private String domain;
 }
