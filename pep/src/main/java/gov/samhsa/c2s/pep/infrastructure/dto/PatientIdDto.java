@@ -11,9 +11,14 @@ import org.hibernate.validator.constraints.NotBlank;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PatientIdDto {
+    /**
+     * The patient domain ID
+     */
     @NotBlank
     private String root;
-
+    /**
+     * The patient MRN
+     */
     @NotBlank
     private String extension;
 }
