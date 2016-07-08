@@ -6,10 +6,7 @@ import feign.FeignException;
 import gov.samhsa.c2s.pep.infrastructure.ContextHandlerService;
 import gov.samhsa.c2s.pep.infrastructure.DssService;
 import gov.samhsa.c2s.pep.infrastructure.ProviderNpiLookupServiceImpl;
-import gov.samhsa.c2s.pep.infrastructure.dto.PatientIdDto;
-import gov.samhsa.c2s.pep.infrastructure.dto.XacmlRequestDto;
-import gov.samhsa.c2s.pep.infrastructure.dto.XacmlResponseDto;
-import gov.samhsa.c2s.pep.infrastructure.dto.XacmlResult;
+import gov.samhsa.c2s.pep.infrastructure.dto.*;
 import gov.samhsa.c2s.pep.service.dto.AccessRequestDto;
 import gov.samhsa.c2s.pep.service.dto.AccessResponseDto;
 import gov.samhsa.c2s.pep.service.dto.DocumentRequestDto;
@@ -44,6 +41,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.*;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -70,7 +68,6 @@ public class PolicyEnforcementPointImpl implements PolicyEnforcementPoint {
 
     @Autowired
     private RestTemplate restTemplate;
-
     /**
      * The document xml converter.
      */
@@ -137,14 +134,15 @@ public class PolicyEnforcementPointImpl implements PolicyEnforcementPoint {
     @Override
     public DocumentsResponseDto getCCDDocuments(String username, DocumentRequestDto documentRequestDto) {
         final String recipientNpi = Optional.ofNullable(username)
-                .map(providerNpiLookupService.getUsers()::get)
-                .orElseThrow(ProviderNotFoundException::new);
+                                            .map(providerNpiLookupService.getUsers()::get)
+                                            .orElseThrow(ProviderNotFoundException::new);
 
-        String parameter = composeIExHubParameter(documentRequestDto.getMrn(), documentRequestDto.getDomain());
+        String parameters = composeIExHubParameter(documentRequestDto.getMrn(), documentRequestDto.getDomain());
         HttpHeaders headers = new HttpHeaders();
-        headers.set(iexhubParameterKey,parameter );
+        headers.set(iexhubParameterKey,parameters );
         HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
 
+        // Calling IExHub to get ccd document
         ResponseEntity<DocumentsResponseDto> response  = restTemplate.exchange(iexhubUrl, HttpMethod.GET, entity, DocumentsResponseDto.class);
 
         if(!response.getStatusCode().equals(HttpStatus.OK)){
@@ -159,7 +157,18 @@ public class PolicyEnforcementPointImpl implements PolicyEnforcementPoint {
             intermediateNPI = getIntermediateNPI(recipientNpi, documentStr);
             XacmlRequestDto xacmlRequestDto = createXacmlRequestDto(recipientNpi, intermediateNPI.get(), documentRequestDto);
             XacmlResponseDto xacmlResponseDto = contextHandler.enforcePolicy(xacmlRequestDto);
-            System.out.println(xacmlRequestDto);
+
+            assertPDPPermitDecision(xacmlResponseDto);
+
+            XacmlResult xacmlResult = XacmlResult.from(xacmlRequestDto, xacmlResponseDto);
+
+            DSSRequest dssRequest = new DSSRequest();
+            dssRequest.setDocument(documentStr.getBytes(StandardCharsets.UTF_8));
+            dssRequest.setXacmlResult(xacmlResult);
+            val dssResponse = dssService.segmentDocument(dssRequest);
+            System.out.println(dssResponse);
+        }else{
+            return new DocumentsResponseDto();
         }
 
         return null;
