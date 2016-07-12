@@ -18,6 +18,8 @@ import gov.samhsa.mhc.common.document.accessor.DocumentAccessorException;
 import gov.samhsa.mhc.common.document.accessor.DocumentAccessorImpl;
 import gov.samhsa.mhc.common.document.converter.DocumentXmlConverter;
 import gov.samhsa.mhc.common.document.converter.DocumentXmlConverterImpl;
+import gov.samhsa.mhc.common.document.transformer.XmlTransformer;
+import gov.samhsa.mhc.common.param.Params;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +40,7 @@ import org.xml.sax.InputSource;
 import javax.annotation.PostConstruct;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.URIResolver;
 import java.io.*;
 import java.lang.reflect.Array;
 import java.net.URI;
@@ -84,6 +87,9 @@ public class PolicyEnforcementPointImpl implements PolicyEnforcementPoint {
 
     @Autowired
     private ProviderNpiLookupServiceImpl providerNpiLookupService;
+
+    @Autowired
+    private XmlTransformer xmlTransformer;
 
     @Override
     public AccessResponseDto accessDocument(AccessRequestDto accessRequest) {
@@ -134,7 +140,7 @@ public class PolicyEnforcementPointImpl implements PolicyEnforcementPoint {
     }
 
     @Override
-    public DocumentsResponseDto getCCDDocuments(String username, DocumentRequestDto documentRequestDto) {
+    public SegmentedDocumentsResponseDto getCCDDocuments(String username, DocumentRequestDto documentRequestDto) {
         final String recipientNpi = Optional.ofNullable(username)
                                             .map(providerNpiLookupService.getUsers()::get)
                                             .orElseThrow(ProviderNotFoundException::new);
@@ -171,12 +177,29 @@ public class PolicyEnforcementPointImpl implements PolicyEnforcementPoint {
             DSSResponse dssResponse = dssService.segmentDocument(dssRequest);
 
             String segmentedDocumentStr = new String(dssResponse.getSegmentedDocument());
-            patientDocument.setDocument(segmentedDocumentStr);
+            final Document segmentedClinicalDocumentDoc = documentXmlConverter.loadDocument(segmentedDocumentStr);
+            // xslt transformation
+            final String xslUrl = Thread.currentThread().getContextClassLoader().getResource("CCDA_flag_redact.xsl").toString();
 
-            return documentsResponseDto;
+            final String output = xmlTransformer.transform(segmentedClinicalDocumentDoc, xslUrl, Optional.<Params>empty(), Optional.<URIResolver>empty());
+            patientDocument.setDocument(output);
+
+            return toSegmentedDocumentResponse(documentsResponseDto);
         }
 
-        return new DocumentsResponseDto();
+        return new SegmentedDocumentsResponseDto();
+    }
+
+    private SegmentedDocumentsResponseDto toSegmentedDocumentResponse(DocumentsResponseDto documentsResponseDto){
+        ArrayList<SegmentedPatientDocument> segmentedPatientDocuments = new ArrayList<SegmentedPatientDocument>();
+        for(PatientDocument p : documentsResponseDto.getDocuments()){
+            SegmentedPatientDocument segmentedPatientDocument =  new SegmentedPatientDocument(p.getName(), p.getDocument().getBytes(StandardCharsets.UTF_8));
+            segmentedPatientDocuments.add(segmentedPatientDocument);
+        }
+
+        SegmentedDocumentsResponseDto segmentedDocumentsResponseDto = new SegmentedDocumentsResponseDto();
+        segmentedDocumentsResponseDto.setDocuments(segmentedPatientDocuments);
+        return segmentedDocumentsResponseDto;
     }
 
     private XacmlRequestDto createXacmlRequestDto(String recipientNpi, String intermediateNPI, DocumentRequestDto documentRequestDto){
@@ -188,7 +211,9 @@ public class PolicyEnforcementPointImpl implements PolicyEnforcementPoint {
         patientIdDto.setRoot(documentRequestDto.getDomain());
 
         xacmlRequestDto.setPatientId(patientIdDto);
-        xacmlRequestDto.setPurposeOfUse(documentRequestDto.getPurposeOfUse());
+        SubjectPurposeOfUse purposeOfUse = documentRequestDto.getPurposeOfUse();
+        xacmlRequestDto.setPurposeOfUse(purposeOfUse);
+
         xacmlRequestDto.setRecipientNpi(recipientNpi);
 
         return xacmlRequestDto;
