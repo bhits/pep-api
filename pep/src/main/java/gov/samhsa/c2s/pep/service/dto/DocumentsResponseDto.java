@@ -14,20 +14,19 @@ import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-//@Data
-//@Builder
-//@NoArgsConstructor
-//@AllArgsConstructor
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class DocumentsResponseDto {
 
-    private ArrayList<String> documents;
+    private ArrayList<PatientDocument> documents;
 
-    public ArrayList<String> getDocuments() {
+    public DocumentsResponseDto() {
+        this.documents = new ArrayList<PatientDocument>();
+    }
+
+    public ArrayList<PatientDocument> getDocuments() {
         return this.documents;
     }
 
-    public void setDocuments(ArrayList<String> documents) {
+    public void setDocuments(ArrayList<PatientDocument> documents) {
         this.documents = documents;
     }
 }

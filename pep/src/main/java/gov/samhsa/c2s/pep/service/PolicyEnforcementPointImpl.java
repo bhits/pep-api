@@ -7,10 +7,9 @@ import gov.samhsa.c2s.pep.infrastructure.ContextHandlerService;
 import gov.samhsa.c2s.pep.infrastructure.DssService;
 import gov.samhsa.c2s.pep.infrastructure.ProviderNpiLookupServiceImpl;
 import gov.samhsa.c2s.pep.infrastructure.dto.*;
-import gov.samhsa.c2s.pep.service.dto.AccessRequestDto;
-import gov.samhsa.c2s.pep.service.dto.AccessResponseDto;
-import gov.samhsa.c2s.pep.service.dto.DocumentRequestDto;
-import gov.samhsa.c2s.pep.service.dto.DocumentsResponseDto;
+import gov.samhsa.c2s.pep.infrastructure.dto.XacmlRequestDto;
+import gov.samhsa.c2s.pep.infrastructure.dto.XacmlResponseDto;
+import gov.samhsa.c2s.pep.service.dto.*;
 import gov.samhsa.c2s.pep.service.exception.DocumentNotFoundException;
 import gov.samhsa.c2s.pep.service.exception.InternalServerErrorException;
 import gov.samhsa.c2s.pep.service.exception.ProviderNotFoundException;
@@ -40,9 +39,12 @@ import javax.annotation.PostConstruct;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.*;
+import java.lang.reflect.Array;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -150,11 +152,12 @@ public class PolicyEnforcementPointImpl implements PolicyEnforcementPoint {
         }
 
         Optional<String> intermediateNPI = Optional.empty();
-        DocumentsResponseDto patientDataResponse = response.getBody();
+        DocumentsResponseDto documentsResponseDto = response.getBody();
 
-        if(patientDataResponse.getDocuments().size() > 0){
-            String documentStr = patientDataResponse.getDocuments().get(0);
-            intermediateNPI = getIntermediateNPI(recipientNpi, documentStr);
+        if(documentsResponseDto.getDocuments().size() > 0){
+            PatientDocument patientDocument = documentsResponseDto.getDocuments().get(0);
+            String documentStr = patientDocument.getDocument();
+            intermediateNPI = getIntermediateNPI(recipientNpi,documentStr );
             XacmlRequestDto xacmlRequestDto = createXacmlRequestDto(recipientNpi, intermediateNPI.get(), documentRequestDto);
             XacmlResponseDto xacmlResponseDto = contextHandler.enforcePolicy(xacmlRequestDto);
 
@@ -165,13 +168,15 @@ public class PolicyEnforcementPointImpl implements PolicyEnforcementPoint {
             DSSRequest dssRequest = new DSSRequest();
             dssRequest.setDocument(documentStr.getBytes(StandardCharsets.UTF_8));
             dssRequest.setXacmlResult(xacmlResult);
-            val dssResponse = dssService.segmentDocument(dssRequest);
-            System.out.println(dssResponse);
-        }else{
-            return new DocumentsResponseDto();
+            DSSResponse dssResponse = dssService.segmentDocument(dssRequest);
+
+            String segmentedDocumentStr = new String(dssResponse.getSegmentedDocument());
+            patientDocument.setDocument(segmentedDocumentStr);
+
+            return documentsResponseDto;
         }
 
-        return null;
+        return new DocumentsResponseDto();
     }
 
     private XacmlRequestDto createXacmlRequestDto(String recipientNpi, String intermediateNPI, DocumentRequestDto documentRequestDto){
