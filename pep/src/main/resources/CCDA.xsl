@@ -1310,71 +1310,15 @@
         <xsl:text>: </xsl:text>
     </xsl:template>
     <!--  Tables   -->
-    <xsl:template
-            match="n1:table/@*|n1:thead/@*|n1:tfoot/@*|n1:tbody/@*|n1:colgroup/@*|n1:col/@*|n1:tr/@*|n1:th/@*|n1:td/@*">
+    <!--
+    <xsl:template match="n1:table/@*|n1:thead/@*|n1:tfoot/@*|n1:tbody/@*|n1:colgroup/@*|n1:col/@*|n1:tr/@*|n1:th/@*|n1:td/@*">
 
         <xsl:copy>
             <xsl:copy-of select="@*"/>
             <xsl:apply-templates/>
         </xsl:copy>
     </xsl:template>
-    <xsl:template match="n1:table">
-        <div class="table-responsive">
-            <table class="table narr_table">
-                <xsl:copy-of select="@*"/>
-                <xsl:apply-templates/>
-            </table>
-        </div>
-    </xsl:template>
-    <xsl:template match="n1:thead">
-        <thead>
-            <xsl:copy-of select="@*"/>
-            <xsl:apply-templates/>
-        </thead>
-    </xsl:template>
-    <xsl:template match="n1:tfoot">
-        <tfoot>
-            <xsl:copy-of select="@*"/>
-            <xsl:apply-templates/>
-        </tfoot>
-    </xsl:template>
-    <xsl:template match="n1:tbody">
-        <tbody>
-            <xsl:copy-of select="@*"/>
-            <xsl:apply-templates/>
-        </tbody>
-    </xsl:template>
-    <xsl:template match="n1:colgroup">
-        <colgroup>
-            <xsl:copy-of select="@*"/>
-            <xsl:apply-templates/>
-        </colgroup>
-    </xsl:template>
-    <xsl:template match="n1:col">
-        <col>
-            <xsl:copy-of select="@*"/>
-            <xsl:apply-templates/>
-        </col>
-    </xsl:template>
-    <xsl:template match="n1:tr">
-        <tr class="narr_tr">
-            <xsl:copy-of select="@*"/>
-            <xsl:apply-templates/>
-        </tr>
-    </xsl:template>
-    <xsl:template match="n1:th">
-        <th class="narr_th">
-            <xsl:copy-of select="@*"/>
-            <xsl:apply-templates/>
-        </th>
-    </xsl:template>
-    <xsl:template match="n1:td">
-        <td>
-            <xsl:copy-of select="@*"/>
-            <xsl:apply-templates/>
-        </td>
-    </xsl:template>
-    <!-- Original Table styling
+    -->
     <xsl:variable name="table-elem-attrs">
         <in:tableElems>
             <in:elem name="table">
@@ -1486,34 +1430,21 @@
             <xsl:variable name="attr-name" select="local-name(.)"/>
             <xsl:variable name="source" select="."/>
             <xsl:variable name="lcSource" select="translate($source, $uc, $lc)"/>
-            <xsl:variable name="scrubbedSource"
-                          select="translate($source, $simple-sanitizer-match, $simple-sanitizer-replace)"/>
+            <xsl:variable name="scrubbedSource" select="translate($source, $simple-sanitizer-match, $simple-sanitizer-replace)"/>
             <xsl:choose>
                 <xsl:when test="contains($lcSource,'javascript')">
-                    <p>
-                        <xsl:value-of select="$javascript-injection-warning"/>
-                    </p>
-                    <xsl:message terminate="yes">
-                        <xsl:value-of select="$javascript-injection-warning"/>
-                    </xsl:message>
+                    <p><xsl:value-of select="$javascript-injection-warning"/></p>
+                    <xsl:message terminate="yes"><xsl:value-of select="$javascript-injection-warning"/></xsl:message>
                 </xsl:when>
                 <xsl:when test="$attr-name='styleCode'">
                     <xsl:apply-templates select="."/>
                 </xsl:when>
-                <xsl:when
-                        test="not(document('')/xsl:stylesheet/xsl:variable[@name='table-elem-attrs']/in:tableElems/in:elem[@name=$elem-name]/in:attr[@name=$attr-name])">
-                    <xsl:message>
-                        <xsl:value-of select="$attr-name"/> is not legal in
-                        <xsl:value-of select="$elem-name"/>
-                    </xsl:message>
+                <xsl:when test="not(document('')/xsl:stylesheet/xsl:variable[@name='table-elem-attrs']/in:tableElems/in:elem[@name=$elem-name]/in:attr[@name=$attr-name])">
+                    <xsl:message><xsl:value-of select="$attr-name"/> is not legal in <xsl:value-of select="$elem-name"/></xsl:message>
                 </xsl:when>
                 <xsl:when test="not($source = $scrubbedSource)">
-                    <p>
-                        <xsl:value-of select="$malicious-content-warning"/>
-                    </p>
-                    <xsl:message>
-                        <xsl:value-of select="$malicious-content-warning"/>
-                    </xsl:message>
+                    <p><xsl:value-of select="$malicious-content-warning"/> </p>
+                    <xsl:message><xsl:value-of select="$malicious-content-warning"/></xsl:message>
                 </xsl:when>
                 <xsl:otherwise>
                     <xsl:copy-of select="."/>
@@ -1522,20 +1453,35 @@
         </xsl:for-each>
     </xsl:template>
 
-    <xsl:template match="n1:table | n1:thead | n1:tfoot | n1:tbody | n1:colgroup | n1:col | n1:tr | n1:th | n1:td">
+    <xsl:template match="n1:table">
+        <div class="table-responsive">
+            <table class="table narr_table">
+                <xsl:copy-of select="@*"/>
+                <xsl:apply-templates/>
+            </table>
+        </div>
+    </xsl:template>
+    <xsl:template match="n1:tr">
+        <tr class="narr_tr">
+            <xsl:copy-of select="@*"/>
+            <xsl:apply-templates/>
+        </tr>
+    </xsl:template>
+    <xsl:template match="n1:th">
+        <th class="narr_th">
+            <xsl:copy-of select="@*"/>
+            <xsl:apply-templates/>
+        </th>
+    </xsl:template>
+
+    <xsl:template match="n1:thead | n1:tfoot | n1:tbody | n1:colgroup | n1:col | n1:td">
         <xsl:element name="{local-name()}">
             <xsl:call-template name="output-attrs"/>
             <xsl:apply-templates/>
         </xsl:element>
     </xsl:template>
-    -->
+
     <!--
-    <xsl:template match="n1:table">
-        <table>
-            <xsl:call-template name="output-attrs"/>
-            <xsl:apply-templates/>
-        </table>
-    </xsl:template>
     <xsl:template match="n1:thead">
         <thead>
             <xsl:call-template name="output-attrs"/>
@@ -1565,18 +1511,6 @@
             <xsl:call-template name="output-attrs"/>
             <xsl:apply-templates/>
         </col>
-    </xsl:template>
-    <xsl:template match="n1:tr">
-        <tr>
-            <xsl:call-template name="output-attrs"/>
-            <xsl:apply-templates/>
-        </tr>
-    </xsl:template>
-    <xsl:template match="n1:th">
-        <th>
-            <xsl:call-template name="output-attrs"/>
-            <xsl:apply-templates/>
-        </th>
     </xsl:template>
     <xsl:template match="n1:td">
         <td>
