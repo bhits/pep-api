@@ -3,10 +3,7 @@ package gov.samhsa.c2s.pep.web;
 import gov.samhsa.c2s.pep.service.PolicyEnforcementPoint;
 import gov.samhsa.c2s.pep.service.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.security.Principal;
@@ -21,8 +18,8 @@ public class PolicyEnforcementPointRestController {
         return policyEnforcementPoint.accessDocument(accessRequest);
     }
 
-    @RequestMapping(value = "/documents", method = RequestMethod.POST)
-    public SegmentedDocumentsResponseDto getDocuments(@Valid @RequestBody DocumentRequestDto documentRequestDto, Principal principal) {
-        return policyEnforcementPoint.getCCDDocuments(principal.getName(), documentRequestDto);
+    @RequestMapping(value = "/documents", method = RequestMethod.GET)
+    public SegmentedDocumentsResponseDto getDocuments(@RequestParam("mrn") String mrn, @RequestParam("purposeOfUse") String purposeOfUse, @RequestParam("domain") String domain, Principal principal) {
+        return policyEnforcementPoint.getCCDDocuments(principal.getName(), mrn, purposeOfUse, domain);
     }
 }

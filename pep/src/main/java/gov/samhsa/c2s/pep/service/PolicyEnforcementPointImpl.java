@@ -140,12 +140,12 @@ public class PolicyEnforcementPointImpl implements PolicyEnforcementPoint {
     }
 
     @Override
-    public SegmentedDocumentsResponseDto getCCDDocuments(String username, DocumentRequestDto documentRequestDto) {
+    public SegmentedDocumentsResponseDto getCCDDocuments(String username, String mrn, String purposeOfUse, String domain) {
         final String recipientNpi = Optional.ofNullable(username)
                                             .map(providerNpiLookupService.getUsers()::get)
                                             .orElseThrow(ProviderNotFoundException::new);
 
-        String parameters = composeIExHubParameter(documentRequestDto.getMrn(), documentRequestDto.getDomain());
+        String parameters = composeIExHubParameter(mrn, domain);
         HttpHeaders headers = new HttpHeaders();
         headers.set(iexhubParameterKey,parameters );
         HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
@@ -164,7 +164,7 @@ public class PolicyEnforcementPointImpl implements PolicyEnforcementPoint {
             PatientDocument patientDocument = documentsResponseDto.getDocuments().get(0);
             String documentStr = patientDocument.getDocument();
             intermediateNPI = getIntermediateNPI(recipientNpi,documentStr );
-            XacmlRequestDto xacmlRequestDto = createXacmlRequestDto(recipientNpi, intermediateNPI.get(), documentRequestDto);
+            XacmlRequestDto xacmlRequestDto = createXacmlRequestDto(recipientNpi, intermediateNPI.get(), mrn, purposeOfUse, domain);
             XacmlResponseDto xacmlResponseDto = contextHandler.enforcePolicy(xacmlRequestDto);
 
             assertPDPPermitDecision(xacmlResponseDto);
@@ -202,16 +202,17 @@ public class PolicyEnforcementPointImpl implements PolicyEnforcementPoint {
         return segmentedDocumentsResponseDto;
     }
 
-    private XacmlRequestDto createXacmlRequestDto(String recipientNpi, String intermediateNPI, DocumentRequestDto documentRequestDto){
+    private XacmlRequestDto createXacmlRequestDto(String recipientNpi, String intermediateNPI,String mrn, String purpose, String domain){
         XacmlRequestDto xacmlRequestDto = new XacmlRequestDto();
         xacmlRequestDto.setIntermediaryNpi(intermediateNPI);
 
         PatientIdDto patientIdDto =  new PatientIdDto();
-        patientIdDto.setExtension(documentRequestDto.getMrn());
-        patientIdDto.setRoot(documentRequestDto.getDomain());
+        patientIdDto.setExtension(mrn);
+        patientIdDto.setRoot(domain);
 
         xacmlRequestDto.setPatientId(patientIdDto);
-        SubjectPurposeOfUse purposeOfUse = documentRequestDto.getPurposeOfUse();
+
+        SubjectPurposeOfUse purposeOfUse =  SubjectPurposeOfUse.valueOf(purpose)  ;
         xacmlRequestDto.setPurposeOfUse(purposeOfUse);
 
         xacmlRequestDto.setRecipientNpi(recipientNpi);

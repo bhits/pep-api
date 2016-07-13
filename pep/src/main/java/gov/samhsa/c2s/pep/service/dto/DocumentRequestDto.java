@@ -20,7 +20,7 @@ import java.util.Optional;
 public class DocumentRequestDto {
 
     @NotNull
-    private SubjectPurposeOfUse purposeOfUse;
+    private String purposeOfUse;
 
     @NotNull
     private String mrn;
