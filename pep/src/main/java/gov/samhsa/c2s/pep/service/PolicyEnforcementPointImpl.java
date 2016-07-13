@@ -122,12 +122,12 @@ public class PolicyEnforcementPointImpl implements PolicyEnforcementPoint {
     }
 
     @Override
-    public SegmentedDocumentsResponseDto getCCDDocuments(String username, DocumentRequestDto documentRequestDto) {
+    public SegmentedDocumentsResponseDto getCCDDocuments(String username,  String mrn, String purposeOfUse, String domain) {
         final String recipientNpi = Optional.ofNullable(username)
                 .map(providerNpiLookupService.getUsers()::get)
                 .orElseThrow(ProviderNotFoundException::new);
 
-        String parameters = composeIExHubParameter(documentRequestDto.getMrn(), documentRequestDto.getDomain());
+        String parameters = composeIExHubParameter(mrn, domain);
         HttpHeaders headers = new HttpHeaders();
         headers.set(iexhubParameterKey, parameters);
         HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
