@@ -143,9 +143,12 @@ public class PolicyEnforcementPointImpl implements PolicyEnforcementPoint {
         DocumentsResponseDto documentsResponseDto = response.getBody();
 
         if (documentsResponseDto.getDocuments().size() > 0) {
+            // Getting thr first document from IExHub as agreed
+            // FIXME For now we decided to handle just one document.
             PatientDocument patientDocument = documentsResponseDto.getDocuments().get(0);
             String documentStr = patientDocument.getDocument();
-            intermediateNPI = getIntermediateNPI(recipientNpi,documentStr );
+            System.out.println("CCD document: " + documentStr);
+            intermediateNPI = getIntermediateNPI(documentStr );
             XacmlRequestDto xacmlRequestDto = createXacmlRequestDto(recipientNpi, intermediateNPI.get(), mrn, purposeOfUse, domain);
             XacmlResponseDto xacmlResponseDto = contextHandler.enforcePolicy(xacmlRequestDto);
 
@@ -218,10 +221,8 @@ public class PolicyEnforcementPointImpl implements PolicyEnforcementPoint {
         return mrn.split("&")[1];
     }
 
-    private Optional<String> getIntermediateNPI(String recipientNpi, String documentStr) {
-        String docStr = documentStr.replaceAll("\n|\r", "");
-        Document ccdDocument = documentXmlConverter.loadDocument(docStr);
-
+    private Optional<String> getIntermediateNPI(String documentStr) {
+        Document ccdDocument = documentXmlConverter.loadDocument(documentStr);
         try {
             Optional<Node> optionalNode = documentAccessor.getNode(ccdDocument, "/hl7:ClinicalDocument/hl7:author[1]/hl7:assignedAuthor[1]/hl7:id[@root='2.16.840.1.113883.4.6'][1]/@extension");
             if (optionalNode.isPresent()) {
