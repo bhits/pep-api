@@ -83,7 +83,7 @@
                 </title>
                 <xsl:call-template name="addCSS"/>
             </head>
-            <body class="container">
+            <body class="container-fluid">
                 <h1 class="h1center">
                     <xsl:value-of select="$title"/>
                 </h1>
