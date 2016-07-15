@@ -37,6 +37,7 @@ import java.util.Optional;
 public class PolicyEnforcementPointImpl implements PolicyEnforcementPoint {
 
     private static final String PERMIT = "permit";
+    private static final String CCD_XSL_PATH = "CCDA.xsl";
 
     @Autowired
     private ContextHandlerService contextHandler;
@@ -143,41 +144,38 @@ public class PolicyEnforcementPointImpl implements PolicyEnforcementPoint {
             Optional<String> intermediateNPI = Optional.empty();
             DocumentsResponseDto documentsResponseDto = response.getBody();
 
-            if (documentsResponseDto.getDocuments().size() > 0) {
-                // Getting thr first document from IExHub as agreed
-                // FIXME For now we decided to handle just one document.
-                PatientDocument patientDocument = documentsResponseDto.getDocuments().get(0);
+            for (PatientDocument patientDocument : documentsResponseDto.getDocuments()) {
                 String documentStr = patientDocument.getDocument();
-                System.out.println("CCD document: " + documentStr);
                 intermediateNPI = getIntermediateNPI(documentStr );
                 XacmlRequestDto xacmlRequestDto = createXacmlRequestDto(recipientNpi, intermediateNPI.get(), mrn, purposeOfUse, domain);
                 XacmlResponseDto xacmlResponseDto = contextHandler.enforcePolicy(xacmlRequestDto);
 
-                assertPDPPermitDecision(xacmlResponseDto);
+                if(xacmlResponseDto.getPdpDecision().equalsIgnoreCase(PERMIT)){
+                    XacmlResult xacmlResult = XacmlResult.from(xacmlRequestDto, xacmlResponseDto);
 
-                XacmlResult xacmlResult = XacmlResult.from(xacmlRequestDto, xacmlResponseDto);
+                    DSSRequest dssRequest = new DSSRequest();
+                    dssRequest.setDocument(documentStr.getBytes(StandardCharsets.UTF_8));
+                    dssRequest.setXacmlResult(xacmlResult);
+                    DSSResponse dssResponse = dssService.segmentDocument(dssRequest);
 
-                DSSRequest dssRequest = new DSSRequest();
-                dssRequest.setDocument(documentStr.getBytes(StandardCharsets.UTF_8));
-                dssRequest.setXacmlResult(xacmlResult);
-                DSSResponse dssResponse = dssService.segmentDocument(dssRequest);
+                    String segmentedDocumentStr = new String(dssResponse.getSegmentedDocument());
+                    final Document segmentedClinicalDocumentDoc = documentXmlConverter.loadDocument(segmentedDocumentStr);
+                    // xslt transformation
+                    final String xslUrl = Thread.currentThread().getContextClassLoader().getResource(CCD_XSL_PATH).toString();
 
-                String segmentedDocumentStr = new String(dssResponse.getSegmentedDocument());
-                final Document segmentedClinicalDocumentDoc = documentXmlConverter.loadDocument(segmentedDocumentStr);
-                // xslt transformation
-                final String xslUrl = Thread.currentThread().getContextClassLoader().getResource("CCDA.xsl").toString();
+                    final String output = xmlTransformer.transform(segmentedClinicalDocumentDoc, xslUrl, Optional.<Params>empty(), Optional.<URIResolver>empty());
+                    patientDocument.setDocument(output);
 
-                final String output = xmlTransformer.transform(segmentedClinicalDocumentDoc, xslUrl, Optional.<Params>empty(), Optional.<URIResolver>empty());
-                patientDocument.setDocument(output);
-
-                segmentedDocumentsResponseDto =  toSegmentedDocumentResponse(documentsResponseDto);
+                    segmentedDocumentsResponseDto =  toSegmentedDocumentResponse(documentsResponseDto);
+                }else{
+                    log.info("PDP DENY decision for: " + patientDocument.getName() );
+                }
             }
         }catch (Exception e){
             log.error(e.getStackTrace().toString());
         }finally {
             return segmentedDocumentsResponseDto;
         }
-
     }
 
     private SegmentedDocumentsResponseDto toSegmentedDocumentResponse(DocumentsResponseDto documentsResponseDto) {
