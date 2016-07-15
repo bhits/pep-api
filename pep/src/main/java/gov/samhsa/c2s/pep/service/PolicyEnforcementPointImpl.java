@@ -131,48 +131,53 @@ public class PolicyEnforcementPointImpl implements PolicyEnforcementPoint {
         HttpHeaders headers = new HttpHeaders();
         headers.set(iexhubParameterKey, parameters);
         HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
+        SegmentedDocumentsResponseDto segmentedDocumentsResponseDto = new SegmentedDocumentsResponseDto();
+        try{
+            // Calling IExHub to get ccd document
+            ResponseEntity<DocumentsResponseDto> response = restTemplate.exchange(iexhubUrl, HttpMethod.GET, entity, DocumentsResponseDto.class);
 
-        // Calling IExHub to get ccd document
-        ResponseEntity<DocumentsResponseDto> response = restTemplate.exchange(iexhubUrl, HttpMethod.GET, entity, DocumentsResponseDto.class);
+            if (!response.getStatusCode().equals(HttpStatus.OK)) {
+                throw new DocumentNotFoundException("Cannot get CCD document from IExhub.");
+            }
 
-        if (!response.getStatusCode().equals(HttpStatus.OK)) {
-            throw new DocumentNotFoundException("Cannot get CCD document from IExhub.");
+            Optional<String> intermediateNPI = Optional.empty();
+            DocumentsResponseDto documentsResponseDto = response.getBody();
+
+            if (documentsResponseDto.getDocuments().size() > 0) {
+                // Getting thr first document from IExHub as agreed
+                // FIXME For now we decided to handle just one document.
+                PatientDocument patientDocument = documentsResponseDto.getDocuments().get(0);
+                String documentStr = patientDocument.getDocument();
+                System.out.println("CCD document: " + documentStr);
+                intermediateNPI = getIntermediateNPI(documentStr );
+                XacmlRequestDto xacmlRequestDto = createXacmlRequestDto(recipientNpi, intermediateNPI.get(), mrn, purposeOfUse, domain);
+                XacmlResponseDto xacmlResponseDto = contextHandler.enforcePolicy(xacmlRequestDto);
+
+                assertPDPPermitDecision(xacmlResponseDto);
+
+                XacmlResult xacmlResult = XacmlResult.from(xacmlRequestDto, xacmlResponseDto);
+
+                DSSRequest dssRequest = new DSSRequest();
+                dssRequest.setDocument(documentStr.getBytes(StandardCharsets.UTF_8));
+                dssRequest.setXacmlResult(xacmlResult);
+                DSSResponse dssResponse = dssService.segmentDocument(dssRequest);
+
+                String segmentedDocumentStr = new String(dssResponse.getSegmentedDocument());
+                final Document segmentedClinicalDocumentDoc = documentXmlConverter.loadDocument(segmentedDocumentStr);
+                // xslt transformation
+                final String xslUrl = Thread.currentThread().getContextClassLoader().getResource("CCDA.xsl").toString();
+
+                final String output = xmlTransformer.transform(segmentedClinicalDocumentDoc, xslUrl, Optional.<Params>empty(), Optional.<URIResolver>empty());
+                patientDocument.setDocument(output);
+
+                segmentedDocumentsResponseDto =  toSegmentedDocumentResponse(documentsResponseDto);
+            }
+        }catch (Exception e){
+            log.error(e.getStackTrace().toString());
+        }finally {
+            return segmentedDocumentsResponseDto;
         }
 
-        Optional<String> intermediateNPI = Optional.empty();
-        DocumentsResponseDto documentsResponseDto = response.getBody();
-
-        if (documentsResponseDto.getDocuments().size() > 0) {
-            // Getting thr first document from IExHub as agreed
-            // FIXME For now we decided to handle just one document.
-            PatientDocument patientDocument = documentsResponseDto.getDocuments().get(0);
-            String documentStr = patientDocument.getDocument();
-            System.out.println("CCD document: " + documentStr);
-            intermediateNPI = getIntermediateNPI(documentStr );
-            XacmlRequestDto xacmlRequestDto = createXacmlRequestDto(recipientNpi, intermediateNPI.get(), mrn, purposeOfUse, domain);
-            XacmlResponseDto xacmlResponseDto = contextHandler.enforcePolicy(xacmlRequestDto);
-
-            assertPDPPermitDecision(xacmlResponseDto);
-
-            XacmlResult xacmlResult = XacmlResult.from(xacmlRequestDto, xacmlResponseDto);
-
-            DSSRequest dssRequest = new DSSRequest();
-            dssRequest.setDocument(documentStr.getBytes(StandardCharsets.UTF_8));
-            dssRequest.setXacmlResult(xacmlResult);
-            DSSResponse dssResponse = dssService.segmentDocument(dssRequest);
-
-            String segmentedDocumentStr = new String(dssResponse.getSegmentedDocument());
-            final Document segmentedClinicalDocumentDoc = documentXmlConverter.loadDocument(segmentedDocumentStr);
-            // xslt transformation
-            final String xslUrl = Thread.currentThread().getContextClassLoader().getResource("CCDA.xsl").toString();
-
-            final String output = xmlTransformer.transform(segmentedClinicalDocumentDoc, xslUrl, Optional.<Params>empty(), Optional.<URIResolver>empty());
-            patientDocument.setDocument(output);
-
-            return toSegmentedDocumentResponse(documentsResponseDto);
-        }
-
-        return new SegmentedDocumentsResponseDto();
     }
 
     private SegmentedDocumentsResponseDto toSegmentedDocumentResponse(DocumentsResponseDto documentsResponseDto) {
