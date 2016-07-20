@@ -16,17 +16,17 @@ import java.util.List;
 
 public class DocumentsResponseDto {
 
-    private ArrayList<PatientDocument> documents;
+    private List<PatientDocument> documents;
 
     public DocumentsResponseDto() {
         this.documents = new ArrayList<PatientDocument>();
     }
 
-    public ArrayList<PatientDocument> getDocuments() {
+    public List<PatientDocument> getDocuments() {
         return this.documents;
     }
 
-    public void setDocuments(ArrayList<PatientDocument> documents) {
+    public void setDocuments(List<PatientDocument> documents) {
         this.documents = documents;
     }
 }

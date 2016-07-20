@@ -12,6 +12,8 @@ pep:
       url: https://localhost:8443/iexhub/services/GetPatientData/ccd
       param-key: ssoauth
       param-value-suffix: PatientId=PATIENT_ID_VALUE&LastName=&FirstName=&MiddleName=&DateOfBirth=&PatientGender=&MotherMaidenName=&AddressStreet=&AddressCity=&AddressState=&AddressPostalCode=&OtherIDsScopingOrganization=&StartDate=&EndDate=
+  patient:
+      document-name: 1.1.1^SallyShare CCDA1
 eureka:
   instance:
     instance-id: ${spring.cloud.client.hostname}:${spring.application.name}:${spring.application.instance_id:${random.value}}

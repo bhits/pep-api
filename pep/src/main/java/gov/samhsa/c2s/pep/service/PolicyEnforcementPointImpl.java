@@ -30,7 +30,11 @@ import org.w3c.dom.Node;
 import javax.xml.transform.URIResolver;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 @Service
 @Slf4j
@@ -53,6 +57,9 @@ public class PolicyEnforcementPointImpl implements PolicyEnforcementPoint {
 
     @Value("${pep.iexhub.url}")
     private String iexhubUrl;
+
+    @Value("${pep.patient.document-name}")
+    private String patientDocumentName;
 
     @Autowired
     private RestTemplate restTemplate;
@@ -146,32 +153,36 @@ public class PolicyEnforcementPointImpl implements PolicyEnforcementPoint {
             Optional<String> intermediateNPI = Optional.empty();
             DocumentsResponseDto documentsResponseDto = response.getBody();
 
+            // Filtering for Sally Share documents
+            List<PatientDocument> collect = documentsResponseDto.getDocuments().stream().filter(doc -> patientDocumentName.equals(doc.getName())).collect(toList());
+            documentsResponseDto.setDocuments(collect);
+
             for (PatientDocument patientDocument : documentsResponseDto.getDocuments()) {
-                String documentStr = patientDocument.getDocument();
-                intermediateNPI = getIntermediateNPI(documentStr);
-                XacmlRequestDto xacmlRequestDto = createXacmlRequestDto(recipientNpi, intermediateNPI.get(), mrn, purposeOfUse, domain);
-                XacmlResponseDto xacmlResponseDto = contextHandler.enforcePolicy(xacmlRequestDto);
+                    String documentStr = patientDocument.getDocument();
+                    intermediateNPI = getIntermediateNPI(documentStr);
+                    XacmlRequestDto xacmlRequestDto = createXacmlRequestDto(recipientNpi, intermediateNPI.get(), mrn, purposeOfUse, domain);
+                    XacmlResponseDto xacmlResponseDto = contextHandler.enforcePolicy(xacmlRequestDto);
 
-                if (xacmlResponseDto.getPdpDecision().equalsIgnoreCase(PERMIT)) {
-                    XacmlResult xacmlResult = XacmlResult.from(xacmlRequestDto, xacmlResponseDto);
+                    if (xacmlResponseDto.getPdpDecision().equalsIgnoreCase(PERMIT)) {
+                        XacmlResult xacmlResult = XacmlResult.from(xacmlRequestDto, xacmlResponseDto);
 
-                    DSSRequest dssRequest = new DSSRequest();
-                    dssRequest.setDocument(documentStr.getBytes(StandardCharsets.UTF_8));
-                    dssRequest.setXacmlResult(xacmlResult);
-                    DSSResponse dssResponse = dssService.segmentDocument(dssRequest);
+                        DSSRequest dssRequest = new DSSRequest();
+                        dssRequest.setDocument(documentStr.getBytes(StandardCharsets.UTF_8));
+                        dssRequest.setXacmlResult(xacmlResult);
+                        DSSResponse dssResponse = dssService.segmentDocument(dssRequest);
 
-                    String segmentedDocumentStr = new String(dssResponse.getSegmentedDocument());
-                    final Document segmentedClinicalDocumentDoc = documentXmlConverter.loadDocument(segmentedDocumentStr);
-                    // xslt transformation
-                    final String xslUrl = Thread.currentThread().getContextClassLoader().getResource(CCD_XSL_PATH).toString();
+                        String segmentedDocumentStr = new String(dssResponse.getSegmentedDocument());
+                        final Document segmentedClinicalDocumentDoc = documentXmlConverter.loadDocument(segmentedDocumentStr);
+                        // xslt transformation
+                        final String xslUrl = Thread.currentThread().getContextClassLoader().getResource(CCD_XSL_PATH).toString();
 
-                    final String output = xmlTransformer.transform(segmentedClinicalDocumentDoc, xslUrl, Optional.<Params>empty(), Optional.<URIResolver>empty());
-                    patientDocument.setDocument(output);
+                        final String output = xmlTransformer.transform(segmentedClinicalDocumentDoc, xslUrl, Optional.<Params>empty(), Optional.<URIResolver>empty());
+                        patientDocument.setDocument(output);
 
-                    segmentedDocumentsResponseDto = toSegmentedDocumentResponse(documentsResponseDto);
-                } else {
-                    log.info("PDP DENY decision for: " + patientDocument.getName());
-                }
+                        segmentedDocumentsResponseDto = toSegmentedDocumentResponse(documentsResponseDto);
+                    } else {
+                        log.info("PDP DENY decision for: " + patientDocument.getName());
+                    }
             }
 
         } catch (Exception e) {
@@ -183,6 +194,7 @@ public class PolicyEnforcementPointImpl implements PolicyEnforcementPoint {
 
     private SegmentedDocumentsResponseDto toSegmentedDocumentResponse(DocumentsResponseDto documentsResponseDto) {
         ArrayList<SegmentedPatientDocument> segmentedPatientDocuments = new ArrayList<SegmentedPatientDocument>();
+
         for (PatientDocument p : documentsResponseDto.getDocuments()) {
             SegmentedPatientDocument segmentedPatientDocument = new SegmentedPatientDocument(p.getName(), p.getDocument().getBytes(StandardCharsets.UTF_8));
             segmentedPatientDocuments.add(segmentedPatientDocument);
