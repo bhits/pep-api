@@ -85,6 +85,7 @@ public class PolicyEnforcementPointImpl implements PolicyEnforcementPoint {
     @Override
     public AccessResponseDto accessDocument(AccessRequestDto accessRequest) {
         log.info("Initiating PolicyEnforcementPoint.accessDocument flow");
+        log.debug(accessRequest::toString);
         val xacmlRequest = accessRequest.getXacmlRequest();
         log.debug(xacmlRequest::toString);
         val xacmlResponse = enforcePolicy(xacmlRequest);
