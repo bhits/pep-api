@@ -16,8 +16,9 @@ import gov.samhsa.mhc.common.document.accessor.DocumentAccessor;
 import gov.samhsa.mhc.common.document.accessor.DocumentAccessorException;
 import gov.samhsa.mhc.common.document.converter.DocumentXmlConverter;
 import gov.samhsa.mhc.common.document.transformer.XmlTransformer;
+import gov.samhsa.mhc.common.log.Logger;
+import gov.samhsa.mhc.common.log.LoggerFactory;
 import gov.samhsa.mhc.common.param.Params;
-import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,16 +33,16 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
 @Service
-@Slf4j
 public class PolicyEnforcementPointImpl implements PolicyEnforcementPoint {
 
     private static final String PERMIT = "permit";
     private static final String CCD_XSL_PATH = "CCDA.xsl";
+
+    private final Logger log = LoggerFactory.getLogger(this);
 
     @Autowired
     private ContextHandlerService contextHandler;
@@ -83,15 +84,23 @@ public class PolicyEnforcementPointImpl implements PolicyEnforcementPoint {
 
     @Override
     public AccessResponseDto accessDocument(AccessRequestDto accessRequest) {
+        log.info("Initiating PolicyEnforcementPoint.accessDocument flow");
         val xacmlRequest = accessRequest.getXacmlRequest();
+        log.debug(xacmlRequest::toString);
         val xacmlResponse = enforcePolicy(xacmlRequest);
+        log.debug(xacmlResponse::toString);
         val xacmlResult = XacmlResult.from(xacmlRequest, xacmlResponse);
+        log.debug(xacmlResult::toString);
 
         assertPDPPermitDecision(xacmlResponse);
 
         val dssRequest = accessRequest.toDSSRequest(xacmlResult);
+        log.debug(dssRequest::toString);
         val dssResponse = dssService.segmentDocument(dssRequest);
+        log.debug(dssResponse::toString);
         val accessResponse = AccessResponseDto.from(dssResponse);
+        log.debug(accessResponse::toString);
+        log.info("Completed PolicyEnforcementPoint.accessDocument flow, returning response");
         return accessResponse;
     }
 
@@ -158,31 +167,31 @@ public class PolicyEnforcementPointImpl implements PolicyEnforcementPoint {
             documentsResponseDto.setDocuments(collect);
 
             for (PatientDocument patientDocument : documentsResponseDto.getDocuments()) {
-                    String documentStr = patientDocument.getDocument();
-                    intermediateNPI = getIntermediateNPI(documentStr);
-                    XacmlRequestDto xacmlRequestDto = createXacmlRequestDto(recipientNpi, intermediateNPI.get(), mrn, purposeOfUse, domain);
-                    XacmlResponseDto xacmlResponseDto = contextHandler.enforcePolicy(xacmlRequestDto);
+                String documentStr = patientDocument.getDocument();
+                intermediateNPI = getIntermediateNPI(documentStr);
+                XacmlRequestDto xacmlRequestDto = createXacmlRequestDto(recipientNpi, intermediateNPI.get(), mrn, purposeOfUse, domain);
+                XacmlResponseDto xacmlResponseDto = contextHandler.enforcePolicy(xacmlRequestDto);
 
-                    if (xacmlResponseDto.getPdpDecision().equalsIgnoreCase(PERMIT)) {
-                        XacmlResult xacmlResult = XacmlResult.from(xacmlRequestDto, xacmlResponseDto);
+                if (xacmlResponseDto.getPdpDecision().equalsIgnoreCase(PERMIT)) {
+                    XacmlResult xacmlResult = XacmlResult.from(xacmlRequestDto, xacmlResponseDto);
 
-                        DSSRequest dssRequest = new DSSRequest();
-                        dssRequest.setDocument(documentStr.getBytes(StandardCharsets.UTF_8));
-                        dssRequest.setXacmlResult(xacmlResult);
-                        DSSResponse dssResponse = dssService.segmentDocument(dssRequest);
+                    DSSRequest dssRequest = new DSSRequest();
+                    dssRequest.setDocument(documentStr.getBytes(StandardCharsets.UTF_8));
+                    dssRequest.setXacmlResult(xacmlResult);
+                    DSSResponse dssResponse = dssService.segmentDocument(dssRequest);
 
-                        String segmentedDocumentStr = new String(dssResponse.getSegmentedDocument());
-                        final Document segmentedClinicalDocumentDoc = documentXmlConverter.loadDocument(segmentedDocumentStr);
-                        // xslt transformation
-                        final String xslUrl = Thread.currentThread().getContextClassLoader().getResource(CCD_XSL_PATH).toString();
+                    String segmentedDocumentStr = new String(dssResponse.getSegmentedDocument());
+                    final Document segmentedClinicalDocumentDoc = documentXmlConverter.loadDocument(segmentedDocumentStr);
+                    // xslt transformation
+                    final String xslUrl = Thread.currentThread().getContextClassLoader().getResource(CCD_XSL_PATH).toString();
 
-                        final String output = xmlTransformer.transform(segmentedClinicalDocumentDoc, xslUrl, Optional.<Params>empty(), Optional.<URIResolver>empty());
-                        patientDocument.setDocument(output);
+                    final String output = xmlTransformer.transform(segmentedClinicalDocumentDoc, xslUrl, Optional.<Params>empty(), Optional.<URIResolver>empty());
+                    patientDocument.setDocument(output);
 
-                        segmentedDocumentsResponseDto = toSegmentedDocumentResponse(documentsResponseDto);
-                    } else {
-                        log.info("PDP DENY decision for: " + patientDocument.getName());
-                    }
+                    segmentedDocumentsResponseDto = toSegmentedDocumentResponse(documentsResponseDto);
+                } else {
+                    log.info("PDP DENY decision for: " + patientDocument.getName());
+                }
             }
 
         } catch (Exception e) {

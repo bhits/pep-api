@@ -102,18 +102,6 @@
             <artifactId>oauth2</artifactId>
             <version>${c2s.common-libraries.version}</version>
         </dependency>
-        <!-- Testing -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>gov.samhsa.mhc</groupId>
-            <artifactId>common-unit</artifactId>
-            <version>${c2s.common-libraries.version}</version>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>gov.samhsa.mhc</groupId>
             <artifactId>document-converter</artifactId>
@@ -133,6 +121,23 @@
             <groupId>gov.samhsa.mhc</groupId>
             <artifactId>document-accessor</artifactId>
             <version>${c2s.common-libraries.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>gov.samhsa.mhc</groupId>
+            <artifactId>logger-wrapper</artifactId>
+            <version>${c2s.common-libraries.version}</version>
+        </dependency>
+        <!-- Testing -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>gov.samhsa.mhc</groupId>
+            <artifactId>common-unit</artifactId>
+            <version>${c2s.common-libraries.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>
