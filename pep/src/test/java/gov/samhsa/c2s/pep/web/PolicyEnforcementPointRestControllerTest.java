@@ -7,7 +7,6 @@ import gov.samhsa.c2s.pep.infrastructure.dto.XacmlRequestDto;
 import gov.samhsa.c2s.pep.service.PolicyEnforcementPoint;
 import gov.samhsa.c2s.pep.service.dto.AccessResponseDto;
 import gov.samhsa.c2s.pep.service.exception.DocumentNotFoundException;
-import lombok.val;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -20,6 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
@@ -54,26 +54,26 @@ public class PolicyEnforcementPointRestControllerTest {
     @Test
     public void access() throws Exception {
         // Arrange
-        val recipientNpi = "recipientNpi";
-        val intermediaryNpi = "intermediaryNpi";
-        val purposeOfUse = SubjectPurposeOfUse.HEALTHCARE_TREATMENT;
-        val extension = "extension";
-        val root = "root";
-        val patientId = PatientIdDto.builder().extension(extension).root(root).build();
-        val xacmlRequest = XacmlRequestDto.builder().intermediaryNpi(intermediaryNpi).recipientNpi(recipientNpi).patientId(patientId).purposeOfUse(purposeOfUse).build();
-        val document = "document";
-        val documentEncoding = StandardCharsets.UTF_8;
-        val documentBytes = document.getBytes(StandardCharsets.UTF_8);
-        val documentEncodingString = documentEncoding.name();
-        val request = AccessRequestDtoForTest.builder()
+        final String recipientNpi = "recipientNpi";
+        final String intermediaryNpi = "intermediaryNpi";
+        final SubjectPurposeOfUse purposeOfUse = SubjectPurposeOfUse.HEALTHCARE_TREATMENT;
+        final String extension = "extension";
+        final String root = "root";
+        final PatientIdDto patientId = PatientIdDto.builder().extension(extension).root(root).build();
+        final XacmlRequestDto xacmlRequest = XacmlRequestDto.builder().intermediaryNpi(intermediaryNpi).recipientNpi(recipientNpi).patientId(patientId).purposeOfUse(purposeOfUse).build();
+        final String document = "document";
+        final Charset documentEncoding = StandardCharsets.UTF_8;
+        final byte[] documentBytes = document.getBytes(StandardCharsets.UTF_8);
+        final String documentEncodingString = documentEncoding.name();
+        final AccessRequestDtoForTest request = AccessRequestDtoForTest.builder()
                 .xacmlRequest(xacmlRequest)
                 .document(documentBytes)
                 .documentEncoding(documentEncodingString)
                 .build();
-        val segmentedDocument = "segmentedDocument";
-        val segmentedDocumentBytes = segmentedDocument.getBytes(documentEncoding);
+        final String segmentedDocument = "segmentedDocument";
+        final byte[] segmentedDocumentBytes = segmentedDocument.getBytes(documentEncoding);
         final String segmentedDocumentBytesEncodedString = Base64.getEncoder().encodeToString(segmentedDocumentBytes);
-        val response = AccessResponseDto.builder()
+        final AccessResponseDto response = AccessResponseDto.builder()
                 .segmentedDocument(segmentedDocumentBytes)
                 .segmentedDocumentEncoding(documentEncodingString)
                 .build();
@@ -100,18 +100,18 @@ public class PolicyEnforcementPointRestControllerTest {
     @Test
     public void access_Throws_DocumentNotFoundException() throws Exception {
         // Arrange
-        val recipientNpi = "recipientNpi";
-        val intermediaryNpi = "intermediaryNpi";
-        val purposeOfUse = SubjectPurposeOfUse.HEALTHCARE_TREATMENT;
-        val extension = "extension";
-        val root = "root";
-        val patientId = PatientIdDto.builder().extension(extension).root(root).build();
-        val xacmlRequest = XacmlRequestDto.builder().intermediaryNpi(intermediaryNpi).recipientNpi(recipientNpi).patientId(patientId).purposeOfUse(purposeOfUse).build();
-        val document = "document";
-        val documentEncoding = StandardCharsets.UTF_8;
-        val documentBytes = document.getBytes(StandardCharsets.UTF_8);
-        val documentEncodingString = documentEncoding.name();
-        val request = AccessRequestDtoForTest.builder()
+        final String recipientNpi = "recipientNpi";
+        final String intermediaryNpi = "intermediaryNpi";
+        final SubjectPurposeOfUse purposeOfUse = SubjectPurposeOfUse.HEALTHCARE_TREATMENT;
+        final String extension = "extension";
+        final String root = "root";
+        final PatientIdDto patientId = PatientIdDto.builder().extension(extension).root(root).build();
+        final XacmlRequestDto xacmlRequest = XacmlRequestDto.builder().intermediaryNpi(intermediaryNpi).recipientNpi(recipientNpi).patientId(patientId).purposeOfUse(purposeOfUse).build();
+        final String document = "document";
+        final Charset documentEncoding = StandardCharsets.UTF_8;
+        final byte[] documentBytes = document.getBytes(StandardCharsets.UTF_8);
+        final String documentEncodingString = documentEncoding.name();
+        final AccessRequestDtoForTest request = AccessRequestDtoForTest.builder()
                 .xacmlRequest(xacmlRequest)
                 .document(documentBytes)
                 .documentEncoding(documentEncodingString)

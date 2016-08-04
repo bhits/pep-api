@@ -6,9 +6,9 @@ import gov.samhsa.c2s.pep.infrastructure.ContextHandlerService;
 import gov.samhsa.c2s.pep.infrastructure.DssService;
 import gov.samhsa.c2s.pep.infrastructure.dto.*;
 import gov.samhsa.c2s.pep.service.dto.AccessRequestDto;
+import gov.samhsa.c2s.pep.service.dto.AccessResponseDto;
 import gov.samhsa.c2s.pep.service.exception.DocumentNotFoundException;
 import gov.samhsa.c2s.pep.service.exception.InternalServerErrorException;
-import lombok.val;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -18,8 +18,10 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static gov.samhsa.mhc.common.unit.matcher.ArgumentMatchers.matching;
@@ -46,22 +48,22 @@ public class PolicyEnforcementPointImplTest {
     @Test
     public void accessDocument_When_PDP_Decision_Is_Permit() throws Exception {
         // Arrange
-        val recipientNpi = "recipientNpi";
-        val intermediaryNpi = "intermediaryNpi";
-        val purposeOfUse = SubjectPurposeOfUse.HEALTHCARE_TREATMENT;
-        val extension = "extension";
-        val root = "root";
-        val patientId = PatientIdDto.builder().extension(extension).root(root).build();
-        val xacmlRequest = XacmlRequestDto.builder().intermediaryNpi(intermediaryNpi).recipientNpi(recipientNpi).patientId(patientId).purposeOfUse(purposeOfUse).build();
-        val decision = "permit";
-        val pdpObligations = Arrays.asList("ETH", "GDIS", "HIV", "PSY", "SEX", "ALC", "COM", "ADD");
-        val xacmlResponse = XacmlResponseDto.builder().pdpDecision(decision).pdpObligations(pdpObligations).build();
-        val document = "document";
-        val documentEncoding = StandardCharsets.UTF_8;
-        val documentBytes = document.getBytes(documentEncoding);
-        val segmentedDocument = "segmentedDocument";
-        val segmentedDocumentBytes = segmentedDocument.getBytes(documentEncoding);
-        val dssResponse = DSSResponse.builder().encoding(documentEncoding.name()).segmentedDocument(segmentedDocumentBytes).build();
+        final String recipientNpi = "recipientNpi";
+        final String intermediaryNpi = "intermediaryNpi";
+        final SubjectPurposeOfUse purposeOfUse = SubjectPurposeOfUse.HEALTHCARE_TREATMENT;
+        final String extension = "extension";
+        final String root = "root";
+        final PatientIdDto patientId = PatientIdDto.builder().extension(extension).root(root).build();
+        final XacmlRequestDto xacmlRequest = XacmlRequestDto.builder().intermediaryNpi(intermediaryNpi).recipientNpi(recipientNpi).patientId(patientId).purposeOfUse(purposeOfUse).build();
+        final String decision = "permit";
+        final List<String> pdpObligations = Arrays.asList("ETH", "GDIS", "HIV", "PSY", "SEX", "ALC", "COM", "ADD");
+        final XacmlResponseDto xacmlResponse = XacmlResponseDto.builder().pdpDecision(decision).pdpObligations(pdpObligations).build();
+        final String document = "document";
+        final Charset documentEncoding = StandardCharsets.UTF_8;
+        final byte[] documentBytes = document.getBytes(documentEncoding);
+        final String segmentedDocument = "segmentedDocument";
+        final byte[] segmentedDocumentBytes = segmentedDocument.getBytes(documentEncoding);
+        final DSSResponse dssResponse = DSSResponse.builder().encoding(documentEncoding.name()).segmentedDocument(segmentedDocumentBytes).build();
         when(contextHandler.enforcePolicy(xacmlRequest)).thenReturn(xacmlResponse);
         when(dssService.segmentDocument(argThat(matching(
                 dssRequest -> document.equals(new String(dssRequest.getDocument(), documentEncoding)) &&
@@ -72,10 +74,10 @@ public class PolicyEnforcementPointImplTest {
                         root.equals(dssRequest.getXacmlResult().getHomeCommunityId()) &&
                         pdpObligations.containsAll(dssRequest.getXacmlResult().getPdpObligations()) &&
                         dssRequest.getXacmlResult().getPdpObligations().containsAll(pdpObligations))))).thenReturn(dssResponse);
-        val request = AccessRequestDto.builder().xacmlRequest(xacmlRequest).document(documentBytes).documentEncoding(Optional.of(documentEncoding.name())).build();
+        final AccessRequestDto request = AccessRequestDto.builder().xacmlRequest(xacmlRequest).document(documentBytes).documentEncoding(Optional.of(documentEncoding.name())).build();
 
         // Act
-        val response = sut.accessDocument(request);
+        final AccessResponseDto response = sut.accessDocument(request);
 
         // Assert
         assertNotNull(response);
@@ -102,22 +104,22 @@ public class PolicyEnforcementPointImplTest {
     public void accessDocument_When_PDP_Decision_Is_Deny() throws Exception {
         // Arrange
         thrown.expect(DocumentNotFoundException.class);
-        val recipientNpi = "recipientNpi";
-        val intermediaryNpi = "intermediaryNpi";
-        val purposeOfUse = SubjectPurposeOfUse.HEALTHCARE_TREATMENT;
-        val extension = "extension";
-        val root = "root";
-        val patientId = PatientIdDto.builder().extension(extension).root(root).build();
-        val xacmlRequest = XacmlRequestDto.builder().intermediaryNpi(intermediaryNpi).recipientNpi(recipientNpi).patientId(patientId).purposeOfUse(purposeOfUse).build();
-        val decision = "deny";
-        val pdpObligations = Arrays.asList("ETH", "GDIS", "HIV", "PSY", "SEX", "ALC", "COM", "ADD");
-        val xacmlResponse = XacmlResponseDto.builder().pdpDecision(decision).pdpObligations(pdpObligations).build();
-        val document = "document";
-        val documentEncoding = StandardCharsets.UTF_8;
-        val documentBytes = document.getBytes(documentEncoding);
-        val segmentedDocument = "segmentedDocument";
-        val segmentedDocumentBytes = segmentedDocument.getBytes(documentEncoding);
-        val dssResponse = DSSResponse.builder().encoding(documentEncoding.name()).segmentedDocument(segmentedDocumentBytes).build();
+        final String recipientNpi = "recipientNpi";
+        final String intermediaryNpi = "intermediaryNpi";
+        final SubjectPurposeOfUse purposeOfUse = SubjectPurposeOfUse.HEALTHCARE_TREATMENT;
+        final String extension = "extension";
+        final String root = "root";
+        final PatientIdDto patientId = PatientIdDto.builder().extension(extension).root(root).build();
+        final XacmlRequestDto xacmlRequest = XacmlRequestDto.builder().intermediaryNpi(intermediaryNpi).recipientNpi(recipientNpi).patientId(patientId).purposeOfUse(purposeOfUse).build();
+        final String decision = "deny";
+        final List<String> pdpObligations = Arrays.asList("ETH", "GDIS", "HIV", "PSY", "SEX", "ALC", "COM", "ADD");
+        final XacmlResponseDto xacmlResponse = XacmlResponseDto.builder().pdpDecision(decision).pdpObligations(pdpObligations).build();
+        final String document = "document";
+        final Charset documentEncoding = StandardCharsets.UTF_8;
+        final byte[] documentBytes = document.getBytes(documentEncoding);
+        final String segmentedDocument = "segmentedDocument";
+        final byte[] segmentedDocumentBytes = segmentedDocument.getBytes(documentEncoding);
+        final DSSResponse dssResponse = DSSResponse.builder().encoding(documentEncoding.name()).segmentedDocument(segmentedDocumentBytes).build();
         when(contextHandler.enforcePolicy(xacmlRequest)).thenReturn(xacmlResponse);
         when(dssService.segmentDocument(argThat(matching(
                 dssRequest -> document.equals(
@@ -129,10 +131,10 @@ public class PolicyEnforcementPointImplTest {
                         root.equals(dssRequest.getXacmlResult().getHomeCommunityId()) &&
                         pdpObligations.containsAll(dssRequest.getXacmlResult().getPdpObligations()) &&
                         dssRequest.getXacmlResult().getPdpObligations().containsAll(pdpObligations))))).thenReturn(dssResponse);
-        val request = AccessRequestDto.builder().xacmlRequest(xacmlRequest).document(documentBytes).documentEncoding(Optional.of(documentEncoding.name())).build();
+        final AccessRequestDto request = AccessRequestDto.builder().xacmlRequest(xacmlRequest).document(documentBytes).documentEncoding(Optional.of(documentEncoding.name())).build();
 
         // Act
-        val response = sut.accessDocument(request);
+        final AccessResponseDto response = sut.accessDocument(request);
 
         // Assert
         assertNotNull(response);
@@ -159,22 +161,22 @@ public class PolicyEnforcementPointImplTest {
     public void accessDocument_When_Context_Hander_Returns_Not_Found_Status() throws Exception {
         // Arrange
         thrown.expect(DocumentNotFoundException.class);
-        val recipientNpi = "recipientNpi";
-        val intermediaryNpi = "intermediaryNpi";
-        val purposeOfUse = SubjectPurposeOfUse.HEALTHCARE_TREATMENT;
-        val extension = "extension";
-        val root = "root";
-        val patientId = PatientIdDto.builder().extension(extension).root(root).build();
-        val xacmlRequest = XacmlRequestDto.builder().intermediaryNpi(intermediaryNpi).recipientNpi(recipientNpi).patientId(patientId).purposeOfUse(purposeOfUse).build();
-        val decision = "deny";
-        val pdpObligations = Arrays.asList("ETH", "GDIS", "HIV", "PSY", "SEX", "ALC", "COM", "ADD");
-        val xacmlResponse = XacmlResponseDto.builder().pdpDecision(decision).pdpObligations(pdpObligations).build();
-        val document = "document";
-        val documentEncoding = StandardCharsets.UTF_8;
-        val documentBytes = document.getBytes(documentEncoding);
-        val segmentedDocument = "segmentedDocument";
-        val segmentedDocumentBytes = segmentedDocument.getBytes(documentEncoding);
-        val dssResponse = DSSResponse.builder().encoding(documentEncoding.name()).segmentedDocument(segmentedDocumentBytes).build();
+        final String recipientNpi = "recipientNpi";
+        final String intermediaryNpi = "intermediaryNpi";
+        final SubjectPurposeOfUse purposeOfUse = SubjectPurposeOfUse.HEALTHCARE_TREATMENT;
+        final String extension = "extension";
+        final String root = "root";
+        final PatientIdDto patientId = PatientIdDto.builder().extension(extension).root(root).build();
+        final XacmlRequestDto xacmlRequest = XacmlRequestDto.builder().intermediaryNpi(intermediaryNpi).recipientNpi(recipientNpi).patientId(patientId).purposeOfUse(purposeOfUse).build();
+        final String decision = "deny";
+        final List<String> pdpObligations = Arrays.asList("ETH", "GDIS", "HIV", "PSY", "SEX", "ALC", "COM", "ADD");
+        final XacmlResponseDto xacmlResponse = XacmlResponseDto.builder().pdpDecision(decision).pdpObligations(pdpObligations).build();
+        final String document = "document";
+        final Charset documentEncoding = StandardCharsets.UTF_8;
+        final byte[] documentBytes = document.getBytes(documentEncoding);
+        final String segmentedDocument = "segmentedDocument";
+        final byte[] segmentedDocumentBytes = segmentedDocument.getBytes(documentEncoding);
+        final DSSResponse dssResponse = DSSResponse.builder().encoding(documentEncoding.name()).segmentedDocument(segmentedDocumentBytes).build();
         FeignException e = mock(FeignException.class);
         when(e.status()).thenReturn(HttpStatus.NOT_FOUND.value());
         HystrixRuntimeException h = mock(HystrixRuntimeException.class);
@@ -190,10 +192,10 @@ public class PolicyEnforcementPointImplTest {
                         root.equals(dssRequest.getXacmlResult().getHomeCommunityId()) &&
                         pdpObligations.containsAll(dssRequest.getXacmlResult().getPdpObligations()) &&
                         dssRequest.getXacmlResult().getPdpObligations().containsAll(pdpObligations))))).thenReturn(dssResponse);
-        val request = AccessRequestDto.builder().xacmlRequest(xacmlRequest).document(documentBytes).documentEncoding(Optional.of(documentEncoding.name())).build();
+        final AccessRequestDto request = AccessRequestDto.builder().xacmlRequest(xacmlRequest).document(documentBytes).documentEncoding(Optional.of(documentEncoding.name())).build();
 
         // Act
-        val response = sut.accessDocument(request);
+        final AccessResponseDto response = sut.accessDocument(request);
 
         // Assert
         assertNotNull(response);
@@ -220,22 +222,22 @@ public class PolicyEnforcementPointImplTest {
     public void accessDocument_When_Context_Hander_Returns_Internal_Server_Error_Status() throws Exception {
         // Arrange
         thrown.expect(InternalServerErrorException.class);
-        val recipientNpi = "recipientNpi";
-        val intermediaryNpi = "intermediaryNpi";
-        val purposeOfUse = SubjectPurposeOfUse.HEALTHCARE_TREATMENT;
-        val extension = "extension";
-        val root = "root";
-        val patientId = PatientIdDto.builder().extension(extension).root(root).build();
-        val xacmlRequest = XacmlRequestDto.builder().intermediaryNpi(intermediaryNpi).recipientNpi(recipientNpi).patientId(patientId).purposeOfUse(purposeOfUse).build();
-        val decision = "deny";
-        val pdpObligations = Arrays.asList("ETH", "GDIS", "HIV", "PSY", "SEX", "ALC", "COM", "ADD");
-        val xacmlResponse = XacmlResponseDto.builder().pdpDecision(decision).pdpObligations(pdpObligations).build();
-        val document = "document";
-        val documentEncoding = StandardCharsets.UTF_8;
-        val documentBytes = document.getBytes(documentEncoding);
-        val segmentedDocument = "segmentedDocument";
-        val segmentedDocumentBytes = segmentedDocument.getBytes(documentEncoding);
-        val dssResponse = DSSResponse.builder().encoding(documentEncoding.name()).segmentedDocument(segmentedDocumentBytes).build();
+        final String recipientNpi = "recipientNpi";
+        final String intermediaryNpi = "intermediaryNpi";
+        final SubjectPurposeOfUse purposeOfUse = SubjectPurposeOfUse.HEALTHCARE_TREATMENT;
+        final String extension = "extension";
+        final String root = "root";
+        final PatientIdDto patientId = PatientIdDto.builder().extension(extension).root(root).build();
+        final XacmlRequestDto xacmlRequest = XacmlRequestDto.builder().intermediaryNpi(intermediaryNpi).recipientNpi(recipientNpi).patientId(patientId).purposeOfUse(purposeOfUse).build();
+        final String decision = "deny";
+        final List<String> pdpObligations = Arrays.asList("ETH", "GDIS", "HIV", "PSY", "SEX", "ALC", "COM", "ADD");
+        final XacmlResponseDto xacmlResponse = XacmlResponseDto.builder().pdpDecision(decision).pdpObligations(pdpObligations).build();
+        final String document = "document";
+        final Charset documentEncoding = StandardCharsets.UTF_8;
+        final byte[] documentBytes = document.getBytes(documentEncoding);
+        final String segmentedDocument = "segmentedDocument";
+        final byte[] segmentedDocumentBytes = segmentedDocument.getBytes(documentEncoding);
+        final DSSResponse dssResponse = DSSResponse.builder().encoding(documentEncoding.name()).segmentedDocument(segmentedDocumentBytes).build();
         FeignException e = mock(FeignException.class);
         when(e.status()).thenReturn(HttpStatus.INTERNAL_SERVER_ERROR.value());
         HystrixRuntimeException h = mock(HystrixRuntimeException.class);
@@ -251,10 +253,10 @@ public class PolicyEnforcementPointImplTest {
                         root.equals(dssRequest.getXacmlResult().getHomeCommunityId()) &&
                         pdpObligations.containsAll(dssRequest.getXacmlResult().getPdpObligations()) &&
                         dssRequest.getXacmlResult().getPdpObligations().containsAll(pdpObligations))))).thenReturn(dssResponse);
-        val request = AccessRequestDto.builder().xacmlRequest(xacmlRequest).document(documentBytes).documentEncoding(Optional.of(documentEncoding.name())).build();
+        final AccessRequestDto request = AccessRequestDto.builder().xacmlRequest(xacmlRequest).document(documentBytes).documentEncoding(Optional.of(documentEncoding.name())).build();
 
         // Act
-        val response = sut.accessDocument(request);
+        final AccessResponseDto response = sut.accessDocument(request);
 
         // Assert
         assertNotNull(response);

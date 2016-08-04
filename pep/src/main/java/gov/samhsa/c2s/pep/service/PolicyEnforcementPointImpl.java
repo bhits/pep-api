@@ -19,7 +19,6 @@ import gov.samhsa.mhc.common.document.transformer.XmlTransformer;
 import gov.samhsa.mhc.common.log.Logger;
 import gov.samhsa.mhc.common.log.LoggerFactory;
 import gov.samhsa.mhc.common.param.Params;
-import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -86,20 +85,20 @@ public class PolicyEnforcementPointImpl implements PolicyEnforcementPoint {
     public AccessResponseDto accessDocument(AccessRequestDto accessRequest) {
         log.info("Initiating PolicyEnforcementPoint.accessDocument flow");
         log.debug(accessRequest::toString);
-        val xacmlRequest = accessRequest.getXacmlRequest();
+        final XacmlRequestDto xacmlRequest = accessRequest.getXacmlRequest();
         log.debug(xacmlRequest::toString);
-        val xacmlResponse = enforcePolicy(xacmlRequest);
+        final XacmlResponseDto xacmlResponse = enforcePolicy(xacmlRequest);
         log.debug(xacmlResponse::toString);
-        val xacmlResult = XacmlResult.from(xacmlRequest, xacmlResponse);
+        final XacmlResult xacmlResult = XacmlResult.from(xacmlRequest, xacmlResponse);
         log.debug(xacmlResult::toString);
 
         assertPDPPermitDecision(xacmlResponse);
 
-        val dssRequest = accessRequest.toDSSRequest(xacmlResult);
+        final DSSRequest dssRequest = accessRequest.toDSSRequest(xacmlResult);
         log.debug(dssRequest::toString);
-        val dssResponse = dssService.segmentDocument(dssRequest);
+        final DSSResponse dssResponse = dssService.segmentDocument(dssRequest);
         log.debug(dssResponse::toString);
-        val accessResponse = AccessResponseDto.from(dssResponse);
+        final AccessResponseDto accessResponse = AccessResponseDto.from(dssResponse);
         log.debug(accessResponse::toString);
         log.info("Completed PolicyEnforcementPoint.accessDocument flow, returning response");
         return accessResponse;
