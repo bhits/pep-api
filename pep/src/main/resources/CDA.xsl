@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Title: Flag Redacted CCDA Fields XSL Stylesheet
-  Filename: CCDA.xsl
+  Title: CDA Fields XSL Stylesheet
+  Filename: CDA.xsl
   Author: BHITS.org
 
   This file is a modified version of the following file:
@@ -34,24 +34,18 @@
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:n1="urn:hl7-org:v3"
                 xmlns:in="urn:lantana-com:inline-variable-data">
-    <xsl:output method="html" indent="yes" version="4.01" encoding="ISO-8859-1"
-                doctype-system="http://www.w3.org/TR/html4/strict.dtd" doctype-public="-//W3C//DTD HTML 4.01//EN"/>
+    <xsl:output method="html" indent="yes" version="4.01" encoding="ISO-8859-1" doctype-system="http://www.w3.org/TR/html4/strict.dtd" doctype-public="-//W3C//DTD HTML 4.01//EN"/>
     <xsl:param name="limit-external-images" select="'yes'"/>
     <!-- A vertical bar separated list of URI prefixes, such as "http://www.example.com|https://www.example.com" -->
     <xsl:param name="external-image-whitelist"/>
     <!-- string processing variables -->
-    <xsl:variable name="lc" select="'abcdefghijklmnopqrstuvwxyz'"/>
-    <xsl:variable name="uc" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'"/>
+    <xsl:variable name="lc" select="'abcdefghijklmnopqrstuvwxyz'" />
+    <xsl:variable name="uc" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'" />
     <!-- removes the following characters, in addition to line breaks "':;?`{}“”„‚’ -->
-    <xsl:variable name="simple-sanitizer-match">
-        <xsl:text>&#10;&#13;&#34;&#39;&#58;&#59;&#63;&#96;&#123;&#125;&#8220;&#8221;&#8222;&#8218;&#8217;</xsl:text>
-    </xsl:variable>
+    <xsl:variable name="simple-sanitizer-match"><xsl:text>&#10;&#13;&#34;&#39;&#58;&#59;&#63;&#96;&#123;&#125;&#8220;&#8221;&#8222;&#8218;&#8217;</xsl:text></xsl:variable>
     <xsl:variable name="simple-sanitizer-replace" select="'***************'"/>
-    <xsl:variable name="javascript-injection-warning">WARNING: Javascript injection attempt detected in source CDA
-        document. Terminating
-    </xsl:variable>
-    <xsl:variable name="malicious-content-warning">WARNING: Potentially malicious content found in CDA document.
-    </xsl:variable>
+    <xsl:variable name="javascript-injection-warning">WARNING: Javascript injection attempt detected in source CDA document. Terminating</xsl:variable>
+    <xsl:variable name="malicious-content-warning">WARNING: Potentially malicious content found in CDA document.</xsl:variable>
 
     <!-- global variable title -->
     <xsl:variable name="title">
@@ -75,9 +69,7 @@
     <xsl:template match="n1:ClinicalDocument">
         <html>
             <head>
-                <xsl:comment>Do NOT edit this HTML directly: it was generated via an XSLT transformation from a CDA
-                    Release 2 XML document.
-                </xsl:comment>
+                <xsl:comment> Do NOT edit this HTML directly: it was generated via an XSLT transformation from a CDA Release 2 XML document. </xsl:comment>
                 <title>
                     <xsl:value-of select="$title"/>
                 </title>
@@ -112,6 +104,9 @@
                 <xsl:apply-templates select="n1:component/n1:structuredBody|n1:component/n1:nonXMLBody"/>
                 <br/>
                 <br/>
+                <script type="text/javascript">
+                    runFixSize();
+                </script>
             </body>
         </html>
     </xsl:template>
@@ -460,7 +455,7 @@
                         </div>
                         <xsl:if test="n1:location/n1:healthCareFacility">
                             <div class="row bordertop">
-                                <div lass="col-xs-4 col-sm-2 div-cell narr_header">
+                                <div class="col-xs-4 col-sm-2 div-cell narr_header">
                                     <span>
                                         <xsl:text>Encounter Location</xsl:text>
                                     </span>
@@ -469,22 +464,18 @@
                                     <xsl:choose>
                                         <xsl:when test="n1:location/n1:healthCareFacility/n1:location/n1:name">
                                             <xsl:call-template name="show-name">
-                                                <xsl:with-param name="name"
-                                                                select="n1:location/n1:healthCareFacility/n1:location/n1:name"/>
+                                                <xsl:with-param name="name" select="n1:location/n1:healthCareFacility/n1:location/n1:name"/>
                                             </xsl:call-template>
-                                            <xsl:for-each
-                                                    select="n1:location/n1:healthCareFacility/n1:serviceProviderOrganization/n1:name">
+                                            <xsl:for-each select="n1:location/n1:healthCareFacility/n1:serviceProviderOrganization/n1:name">
                                                 <xsl:text> of </xsl:text>
                                                 <xsl:call-template name="show-name">
-                                                    <xsl:with-param name="name"
-                                                                    select="n1:location/n1:healthCareFacility/n1:serviceProviderOrganization/n1:name"/>
+                                                    <xsl:with-param name="name" select="n1:location/n1:healthCareFacility/n1:serviceProviderOrganization/n1:name"/>
                                                 </xsl:call-template>
                                             </xsl:for-each>
                                         </xsl:when>
                                         <xsl:when test="n1:location/n1:healthCareFacility/n1:code">
                                             <xsl:call-template name="show-code">
-                                                <xsl:with-param name="code"
-                                                                select="n1:location/n1:healthCareFacility/n1:code"/>
+                                                <xsl:with-param name="code" select="n1:location/n1:healthCareFacility/n1:code"/>
                                             </xsl:call-template>
                                         </xsl:when>
                                         <xsl:otherwise>
@@ -510,8 +501,7 @@
                                 </div>
                                 <div class="col-xs-8 col-sm-10 div-cell narr_row">
                                     <xsl:call-template name="show-assignedEntity">
-                                        <xsl:with-param name="asgnEntity"
-                                                        select="n1:responsibleParty/n1:assignedEntity"/>
+                                        <xsl:with-param name="asgnEntity" select="n1:responsibleParty/n1:assignedEntity"/>
                                     </xsl:call-template>
                                 </div>
                             </div>
@@ -546,16 +536,13 @@
                         </div>
                         <div class="col-xs-8 col-sm-10 div-cell narr_row">
                             <xsl:choose>
-                                <xsl:when
-                                        test="n1:custodian/n1:assignedCustodian/n1:representedCustodianOrganization/n1:name">
+                                <xsl:when test="n1:custodian/n1:assignedCustodian/n1:representedCustodianOrganization/n1:name">
                                     <xsl:call-template name="show-name">
-                                        <xsl:with-param name="name"
-                                                        select="n1:custodian/n1:assignedCustodian/n1:representedCustodianOrganization/n1:name"/>
+                                        <xsl:with-param name="name" select="n1:custodian/n1:assignedCustodian/n1:representedCustodianOrganization/n1:name"/>
                                     </xsl:call-template>
                                 </xsl:when>
                                 <xsl:otherwise>
-                                    <xsl:for-each
-                                            select="n1:custodian/n1:assignedCustodian/n1:representedCustodianOrganization/n1:id">
+                                    <xsl:for-each select="n1:custodian/n1:assignedCustodian/n1:representedCustodianOrganization/n1:id">
                                         <xsl:call-template name="show-id"/>
                                         <xsl:if test="position()!=last()">
                                             <br/>
@@ -572,8 +559,7 @@
                             </div>
                             <div class="col-xs-8 col-sm-10 div-cell narr_row">
                                 <xsl:call-template name="show-contactInfo">
-                                    <xsl:with-param name="contact"
-                                                    select="n1:custodian/n1:assignedCustodian/n1:representedCustodianOrganization"/>
+                                    <xsl:with-param name="contact" select="n1:custodian/n1:assignedCustodian/n1:representedCustodianOrganization"/>
                                 </xsl:call-template>
                             </div>
                         </div>
@@ -613,21 +599,18 @@
                                                     <xsl:when test="n1:serviceEvent/n1:effectiveTime/@value">
                                                         <xsl:text>&#160;at&#160;</xsl:text>
                                                         <xsl:call-template name="show-time">
-                                                            <xsl:with-param name="datetime"
-                                                                            select="n1:serviceEvent/n1:effectiveTime"/>
+                                                            <xsl:with-param name="datetime" select="n1:serviceEvent/n1:effectiveTime"/>
                                                         </xsl:call-template>
                                                     </xsl:when>
                                                     <xsl:when test="n1:serviceEvent/n1:effectiveTime/n1:low">
                                                         <xsl:text>&#160;from&#160;</xsl:text>
                                                         <xsl:call-template name="show-time">
-                                                            <xsl:with-param name="datetime"
-                                                                            select="n1:serviceEvent/n1:effectiveTime/n1:low"/>
+                                                            <xsl:with-param name="datetime" select="n1:serviceEvent/n1:effectiveTime/n1:low"/>
                                                         </xsl:call-template>
                                                         <xsl:if test="n1:serviceEvent/n1:effectiveTime/n1:high">
                                                             <xsl:text> to </xsl:text>
                                                             <xsl:call-template name="show-time">
-                                                                <xsl:with-param name="datetime"
-                                                                                select="n1:serviceEvent/n1:effectiveTime/n1:high"/>
+                                                                <xsl:with-param name="datetime" select="n1:serviceEvent/n1:effectiveTime/n1:high"/>
                                                             </xsl:call-template>
                                                         </xsl:if>
                                                     </xsl:when>
@@ -1117,27 +1100,16 @@
             <xsl:when test='n1:text/n1:reference'>
                 <xsl:variable name="source" select="string(n1:text/n1:reference/@value)"/>
                 <xsl:variable name="lcSource" select="translate($source, $uc, $lc)"/>
-                <xsl:variable name="scrubbedSource"
-                              select="translate($source, $simple-sanitizer-match, $simple-sanitizer-replace)"/>
-                <xsl:message><xsl:value-of select="$source"/>,
-                    <xsl:value-of select="$lcSource"/>
-                </xsl:message>
+                <xsl:variable name="scrubbedSource" select="translate($source, $simple-sanitizer-match, $simple-sanitizer-replace)"/>
+                <xsl:message><xsl:value-of select="$source"/>, <xsl:value-of select="$lcSource"/></xsl:message>
                 <xsl:choose>
                     <xsl:when test="contains($lcSource,'javascript')">
-                        <p>
-                            <xsl:value-of select="$javascript-injection-warning"/>
-                        </p>
-                        <xsl:message>
-                            <xsl:value-of select="$javascript-injection-warning"/>
-                        </xsl:message>
+                        <p><xsl:value-of select="$javascript-injection-warning"/> </p>
+                        <xsl:message><xsl:value-of select="$javascript-injection-warning"/></xsl:message>
                     </xsl:when>
                     <xsl:when test="not($source = $scrubbedSource)">
-                        <p>
-                            <xsl:value-of select="$malicious-content-warning"/>
-                        </p>
-                        <xsl:message>
-                            <xsl:value-of select="$malicious-content-warning"/>
-                        </xsl:message>
+                        <p><xsl:value-of select="$malicious-content-warning"/> </p>
+                        <xsl:message><xsl:value-of select="$malicious-content-warning"/></xsl:message>
                     </xsl:when>
                     <xsl:otherwise>
                         <iframe name='nonXMLBody' id='nonXMLBody' WIDTH='80%' HEIGHT='600' src='{$source}' sandbox=""/>
@@ -1145,9 +1117,7 @@
                 </xsl:choose>
             </xsl:when>
             <xsl:when test='n1:text/@mediaType="text/plain"'>
-                <pre>
-                    <xsl:value-of select='n1:text/text()'/>
-                </pre>
+                <pre><xsl:value-of select='n1:text/text()'/></pre>
             </xsl:when>
             <xsl:otherwise>
                 <pre>Cannot display the text</pre>
@@ -1248,7 +1218,7 @@
     </xsl:template>
     <!--   paragraph  -->
     <xsl:template match="n1:paragraph">
-        <p style="">
+        <p>
             <xsl:apply-templates/>
         </p>
     </xsl:template>
@@ -1453,6 +1423,14 @@
         </xsl:for-each>
     </xsl:template>
 
+    <xsl:template match="n1:thead | n1:tfoot | n1:tbody | n1:colgroup | n1:col | n1:td">
+        <xsl:element name="{local-name()}">
+            <xsl:call-template name="output-attrs"/>
+            <xsl:apply-templates/>
+        </xsl:element>
+    </xsl:template>
+
+    <!-- Custom CDA Fields XSL Stylesheet-->
     <xsl:template match="n1:table">
         <div class="table-responsive">
             <table class="table narr_table">
@@ -1461,27 +1439,29 @@
             </table>
         </div>
     </xsl:template>
+
     <xsl:template match="n1:tr">
         <tr class="narr_tr">
             <xsl:copy-of select="@*"/>
             <xsl:apply-templates/>
         </tr>
     </xsl:template>
+
     <xsl:template match="n1:th">
         <th class="narr_th">
             <xsl:copy-of select="@*"/>
             <xsl:apply-templates/>
         </th>
     </xsl:template>
-
-    <xsl:template match="n1:thead | n1:tfoot | n1:tbody | n1:colgroup | n1:col | n1:td">
-        <xsl:element name="{local-name()}">
-            <xsl:call-template name="output-attrs"/>
-            <xsl:apply-templates/>
-        </xsl:element>
-    </xsl:template>
+    <!--Custom End-->
 
     <!--
+    <xsl:template match="n1:table">
+        <table>
+            <xsl:call-template name="output-attrs"/>
+            <xsl:apply-templates/>
+        </table>
+    </xsl:template>
     <xsl:template match="n1:thead">
         <thead>
             <xsl:call-template name="output-attrs"/>
@@ -1511,6 +1491,18 @@
             <xsl:call-template name="output-attrs"/>
             <xsl:apply-templates/>
         </col>
+    </xsl:template>
+    <xsl:template match="n1:tr">
+        <tr>
+            <xsl:call-template name="output-attrs"/>
+            <xsl:apply-templates/>
+        </tr>
+    </xsl:template>
+    <xsl:template match="n1:th">
+        <th>
+            <xsl:call-template name="output-attrs"/>
+            <xsl:apply-templates/>
+        </th>
     </xsl:template>
     <xsl:template match="n1:td">
         <td>
@@ -1553,13 +1545,9 @@
                     <xsl:when test="starts-with($image-uri,$whitelist-item)">
                         <br clear="all"/>
                         <xsl:element name="img">
-                            <xsl:attribute name="src">
-                                <xsl:value-of select="$image-uri"/>
-                            </xsl:attribute>
+                            <xsl:attribute name="src"><xsl:value-of select="$image-uri"/></xsl:attribute>
                         </xsl:element>
-                        <xsl:message>
-                            <xsl:value-of select="$image-uri"/> is in the whitelist
-                        </xsl:message>
+                        <xsl:message><xsl:value-of select="$image-uri"/> is in the whitelist</xsl:message>
                     </xsl:when>
                     <xsl:otherwise>
                         <xsl:call-template name="check-external-image-whitelist">
@@ -1571,12 +1559,8 @@
 
             </xsl:when>
             <xsl:otherwise>
-                <p>WARNING: non-local image found <xsl:value-of select="$image-uri"/>. Removing. If you wish non-local
-                    images preserved please set the limit-external-images param to 'no'.
-                </p>
-                <xsl:message>WARNING: non-local image found <xsl:value-of select="$image-uri"/>. Removing. If you wish
-                    non-local images preserved please set the limit-external-images param to 'no'.
-                </xsl:message>
+                <p>WARNING: non-local image found <xsl:value-of select="$image-uri"/>. Removing. If you wish non-local images preserved please set the limit-external-images param to 'no'.</p>
+                <xsl:message>WARNING: non-local image found <xsl:value-of select="$image-uri"/>. Removing. If you wish non-local images preserved please set the limit-external-images param to 'no'.</xsl:message>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
@@ -1589,12 +1573,10 @@
                 <!-- Here is where the Region of Interest image referencing goes -->
                 <xsl:if test="//n1:regionOfInterest[@ID=$imageRef]//n1:observationMedia/n1:value[@mediaType='image/gif' or
  @mediaType='image/jpeg']">
-                    <xsl:variable name="image-uri"
-                                  select="//n1:regionOfInterest[@ID=$imageRef]//n1:observationMedia/n1:value/n1:reference/@value"/>
+                    <xsl:variable name="image-uri" select="//n1:regionOfInterest[@ID=$imageRef]//n1:observationMedia/n1:value/n1:reference/@value"/>
 
                     <xsl:choose>
-                        <xsl:when
-                                test="$limit-external-images='yes' and (contains($image-uri,':') or starts-with($image-uri,'\\'))">
+                        <xsl:when test="$limit-external-images='yes' and (contains($image-uri,':') or starts-with($image-uri,'\\'))">
                             <xsl:call-template name="check-external-image-whitelist">
                                 <xsl:with-param name="current-whitelist" select="$external-image-whitelist"/>
                                 <xsl:with-param name="image-uri" select="$image-uri"/>
@@ -1613,9 +1595,7 @@
                         <xsl:otherwise>
                             <br clear="all"/>
                             <xsl:element name="img">
-                                <xsl:attribute name="src">
-                                    <xsl:value-of select="$image-uri"/>
-                                </xsl:attribute>
+                                <xsl:attribute name="src"><xsl:value-of select="$image-uri"/></xsl:attribute>
                             </xsl:element>
                         </xsl:otherwise>
                     </xsl:choose>
@@ -1627,9 +1607,7 @@
                 <xsl:if test="//n1:observationMedia[@ID=$imageRef]/n1:value[@mediaType='image/gif' or @mediaType='image/jpeg']">
                     <br clear="all"/>
                     <xsl:element name="img">
-                        <xsl:attribute name="src">
-                            <xsl:value-of select="//n1:observationMedia[@ID=$imageRef]/n1:value/n1:reference/@value"/>
-                        </xsl:attribute>
+                        <xsl:attribute name="src"><xsl:value-of select="//n1:observationMedia[@ID=$imageRef]/n1:value/n1:reference/@value"/></xsl:attribute>
                     </xsl:element>
                 </xsl:if>
             </xsl:otherwise>
@@ -1639,9 +1617,7 @@
      Supports Bold, Underline and Italics display
      -->
     <xsl:template match="@styleCode">
-        <xsl:attribute name="class">
-            <xsl:value-of select="."/>
-        </xsl:attribute>
+        <xsl:attribute name="class"><xsl:value-of select="."/></xsl:attribute>
     </xsl:template>
     <!--
     <xsl:template match="//n1:*[@styleCode]">
@@ -2540,7 +2516,9 @@
         </xsl:choose>
     </xsl:template>
     <xsl:template name="addCSS">
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"/>
-        <style>body{color:#003367;background-color:#FFFFFF;font-family:Verdana, Tahoma, sans-serif;font-size:11px;margin-left:10px;margin-right:10px}hr{width:90%}table{line-height:10pt;border-collapse:collapse;border-spacing:0}tr{background-color:#ccccff}.m-l-sm{margin-left:10px}.m-r-sm{margin-right:10px}.m-t-sm{margin-top:10px}.m-b-sm{margin-bottom:10px}body{padding-top:70px !important}.navbar-inverse{background-color:#6f6f6f;border-color:white}.navbar-fixed-top{border-radius:0}div.div-entry{padding-left:0;padding-right:0}ul{padding-left:0px;margin-bottom:0}li{list-style:none;padding:0px;margin-bottom:1px}li:last-child{margin-bottom:0}li a{display:block;padding:8px 15px;color:#2a6496;font-size:12pt;font-weight:bold;background-color:#e1edf0}li a:hover{text-decoration:none;color:white;background-color:#1488B8}li:last-child a{border-radius:0 0 4px 4px}h1{font-size:12pt;font-weight:bold}h2,h3,h4{font-size:12pt;font-weight:bold}h2,h3{background-color:#333;color:white;padding:7px 15px;border-radius:4px 4px 0 0;margin-bottom:0;margin-top:0}h2 a,h3 a{color:white;text-decoration:none}h2 a:hover,h3 a:hover{text-decoration:none;color:white}.h1center{font-size:15pt;font-weight:bold;text-align:center}.education-text{color:white;margin:10px 30px 15px}div.education-text > div:first-child{float:left;margin:0 10px 41px 0;color:red}.narr_header{background-color:#e1edf0;height:100%;min-height:100%;font-weight:bold}.row{margin:0}.div-cell{padding:10px;word-wrap:break-word}.border_box > .row:first-child .div-cell:first-child{border-top-left-radius:6px}.border_box > .row:last-child .div-cell:first-child{border-bottom-left-radius:6px}.border_box{border:2px #697181 solid;border-radius:6px;-webkit-border-radius:6px;-moz-border-radius:6px;margin-bottom:10px}.border_box_modified{border:2px #697181 solid;border-radius:0 0 6px 6px;-webkit-border-radius:0 0 6px 6px;-moz-border-radius:0 0 6px 6px;margin-bottom:15px}.border_box_modified > div{color:#444;font-weight:700;font-size:12px}.border_box_modified > div > p{margin-bottom:0}.border_box_modified > div > p:not(first-of-type){margin-top:10px}.border_box_modified > div > ul{padding:5px 0;font-weight:300 !important}.borderbottom{border-bottom:1px #b2b6b8 solid}.bordertop{border-top:1px #b2b6b8 solid}.bordertopLoop:first-child{border-top:none}.bordertopLoop{border-top:2px #697181 solid}.rwd-table{margin:1em 0;border-radius:6px;ebkit-border-radius:6px;-moz-border-radius:6px;overflow:hidden;border:1px green solid}.rwd-table tr{border-top:1px solid red;border-bottom:1px solid red}.rwd-table tr:last-child{border-top:1px solid red;border-bottom:0px}.td_label{color:#5d5d5d;font-weight:bold;background-color:#e5f2f7;padding:10px 15px}.td_result{color:#5d5d5d;font-weight:normal;padding:10px 15px}p ~ .table-responsive{margin-top:10px !important}.table-responsive{margin-left:-10px;margin-right:-10px;margin-top:-10px;margin-bottom:-10px}.table{border:none}hr{width:90%}section{margin-bottom:5px}div.container{width:100%}.field_label{font-weight:bold;color:white}@media only screen and (min-width: 769px) and (max-width: 1020px){body{padding-top:90px !important}}@media only screen and (max-width: 768px){body{padding-top:80px !important}h2,h3{font-size:12pt}li a{font-size:10pt;padding:7px 15px}.education-text{margin:10px 10px}div.education-text > div:first-child{margin:0 10px -1px 0}}@media only screen and (max-width: 991px){.table-responsive{overflow-y:hidden;overflow-x:scroll}}@media only screen and (min-width: 480px) and (max-width: 768px){body{font-size:12px}}@media only screen and (max-width: 479px){body{font-size:11px}}.td_label_sm{width:20%;color:#5d5d5d;font-weight:bold;background-color:#e5f2f7}.td_label_med{width:50%;font-weight:bold;background-color:#e5f2f7}.td_label_lg{width:80%;font-weight:bold;background-color:#e5f2f7}.td_detail_sm{width:20%;background-color:white}.td_detail_med{width:50%;background-color:white}.td_detail_lg{width:80%;background-color:white}table td{font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;overflow:hidden;word-break:normal;border-color:#999;color:#444;border-style:solid;border-width:0px;border-top-width:0px;border-bottom-width:1px}table .narr_th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;overflow:hidden;word-break:normal;padding:10px 5px;color:#fff;border-style:solid;border-width:0px;border-color:#999;border-top-width:1px;border-bottom-width:1px}.header_table{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;overflow:hidden;word-break:normal;padding:10px 5px;color:#fff;border-style:solid;border-width:0px;border-color:#999;border-top-width:1px;border-bottom-width:1px}.header_table td{width:1%}.narr_table{width:100%;margin-bottom:0 !important}.narr_tr{background-color:#F7FDFA}.narr_th{color:white;background-color:#26ADE4}tbody > .narr_tr > .narr_th{background-color:#D9E7EC;color:#444}table .header_table{border:1pt inset #00008b}.table > thead > tr > th{border-bottom:1px solid #72767D !important}tbody > tr:last-of-type > td:first-of-type{border-bottom-left-radius:6px}tbody > tr:last-of-type > td:last-of-type{border-bottom-right-radius:6px}.table-responsive.demo{width:80%;height:auto;border:gray;border-style:solid;border-width:2px;padding:5px;margin-left:10%}</style>
+        <link href="/pep/css/bootstrap-min.css" rel="stylesheet"/>
+        <link href="/pep/css/cda_style.css" rel="stylesheet"/>
+        <script src="/pep/js/jquery-1.10.2.min.js" type="text/javascript"></script>
+        <script src="/pep/js/fixheight.js" type="text/javascript"></script>
     </xsl:template>
 </xsl:stylesheet>

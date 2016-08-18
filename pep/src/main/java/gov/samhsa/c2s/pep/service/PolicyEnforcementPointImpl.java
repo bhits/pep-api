@@ -39,7 +39,7 @@ import static java.util.stream.Collectors.toList;
 public class PolicyEnforcementPointImpl implements PolicyEnforcementPoint {
 
     private static final String PERMIT = "permit";
-    private static final String CCD_XSL_PATH = "CCDA.xsl";
+    private static final String CCD_XSL_PATH = "CDA.xsl";
 
     private final Logger log = LoggerFactory.getLogger(this);
 
