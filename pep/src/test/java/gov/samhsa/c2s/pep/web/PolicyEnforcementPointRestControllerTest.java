@@ -23,7 +23,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
-import static gov.samhsa.mhc.common.unit.matcher.ArgumentMatchers.matching;
+import static gov.samhsa.c2s.common.unit.matcher.ArgumentMatchers.matching;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.*;

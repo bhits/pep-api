@@ -4,8 +4,8 @@ import gov.samhsa.c2s.pep.service.PolicyEnforcementPoint;
 import gov.samhsa.c2s.pep.service.dto.AccessRequestDto;
 import gov.samhsa.c2s.pep.service.dto.AccessResponseDto;
 import gov.samhsa.c2s.pep.service.dto.SegmentedDocumentsResponseDto;
-import gov.samhsa.mhc.common.log.Logger;
-import gov.samhsa.mhc.common.log.LoggerFactory;
+import gov.samhsa.c2s.common.log.Logger;
+import gov.samhsa.c2s.common.log.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
