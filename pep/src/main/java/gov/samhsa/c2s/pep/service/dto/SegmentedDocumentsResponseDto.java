@@ -1,20 +1,12 @@
 package gov.samhsa.c2s.pep.service.dto;
 
-import java.util.ArrayList;
+import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@Data
 public class SegmentedDocumentsResponseDto {
 
-    private ArrayList<SegmentedPatientDocument> documents;
-
-    public SegmentedDocumentsResponseDto() {
-        this.documents = new ArrayList<SegmentedPatientDocument>();
-    }
-
-    public ArrayList<SegmentedPatientDocument> getDocuments() {
-        return this.documents;
-    }
-
-    public void setDocuments(ArrayList<SegmentedPatientDocument> documents) {
-        this.documents = documents;
-    }
+    private List<SegmentedPatientDocument> documents = new ArrayList<>();
 }

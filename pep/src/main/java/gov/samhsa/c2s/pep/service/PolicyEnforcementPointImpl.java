@@ -41,7 +41,7 @@ public class PolicyEnforcementPointImpl implements PolicyEnforcementPoint {
     private static final String PERMIT = "permit";
     private static final String CCD_XSL_PATH = "CDA.xsl";
 
-    private final Logger log = LoggerFactory.getLogger(this);
+    private final Logger logger = LoggerFactory.getLogger(this);
 
     @Autowired
     private ContextHandlerService contextHandler;
@@ -83,24 +83,24 @@ public class PolicyEnforcementPointImpl implements PolicyEnforcementPoint {
 
     @Override
     public AccessResponseDto accessDocument(AccessRequestDto accessRequest) {
-        log.info("Initiating PolicyEnforcementPoint.accessDocument flow");
-        log.debug(accessRequest::toString);
+        logger.info("Initiating PolicyEnforcementPoint.accessDocument flow");
+        logger.debug(accessRequest::toString);
         final XacmlRequestDto xacmlRequest = accessRequest.getXacmlRequest();
-        log.debug(xacmlRequest::toString);
+        logger.debug(xacmlRequest::toString);
         final XacmlResponseDto xacmlResponse = enforcePolicy(xacmlRequest);
-        log.debug(xacmlResponse::toString);
+        logger.debug(xacmlResponse::toString);
         final XacmlResult xacmlResult = XacmlResult.from(xacmlRequest, xacmlResponse);
-        log.debug(xacmlResult::toString);
+        logger.debug(xacmlResult::toString);
 
         assertPDPPermitDecision(xacmlResponse);
 
         final DSSRequest dssRequest = accessRequest.toDSSRequest(xacmlResult);
-        log.debug(dssRequest::toString);
+        logger.debug(dssRequest::toString);
         final DSSResponse dssResponse = dssService.segmentDocument(dssRequest);
-        log.debug(dssResponse::toString);
+        logger.debug(dssResponse::toString);
         final AccessResponseDto accessResponse = AccessResponseDto.from(dssResponse);
-        log.debug(accessResponse::toString);
-        log.info("Completed PolicyEnforcementPoint.accessDocument flow, returning response");
+        logger.debug(accessResponse::toString);
+        logger.info("Completed PolicyEnforcementPoint.accessDocument flow, returning response");
         return accessResponse;
     }
 
@@ -120,15 +120,15 @@ public class PolicyEnforcementPointImpl implements PolicyEnforcementPoint {
                     .filter(FeignException.class::isInstance)
                     .map(FeignException.class::cast)
                     .orElseThrow(() -> {
-                        log.error(e.getMessage(), e);
+                        logger.error(e.getMessage(), e);
                         return new InternalServerErrorException(e);
                     });
             if (HttpStatus.NOT_FOUND.equals(getHttpStatus(feignException))) {
-                log.info("consent not found");
-                log.debug(e.getMessage(), e);
+                logger.info("consent not found");
+                logger.debug(e.getMessage(), e);
                 throw new DocumentNotFoundException();
             } else {
-                log.error(e.getMessage(), e);
+                logger.error(e.getMessage(), e);
                 throw new InternalServerErrorException(e);
             }
         }
@@ -161,6 +161,7 @@ public class PolicyEnforcementPointImpl implements PolicyEnforcementPoint {
 
             Optional<String> intermediateNPI = Optional.empty();
             DocumentsResponseDto documentsResponseDto = response.getBody();
+            logger.debug(documentsResponseDto::toString);
 
             // Filtering for Sally Share documents
             List<PatientDocument> collect = documentsResponseDto.getDocuments().stream().filter(doc -> patientDocumentName.equals(doc.getName())).collect(toList());
@@ -170,7 +171,9 @@ public class PolicyEnforcementPointImpl implements PolicyEnforcementPoint {
                 String documentStr = patientDocument.getDocument();
                 intermediateNPI = getIntermediateNPI(documentStr);
                 XacmlRequestDto xacmlRequestDto = createXacmlRequestDto(recipientNpi, intermediateNPI.get(), mrn, purposeOfUse, domain);
+                logger.debug(xacmlRequestDto::toString);
                 XacmlResponseDto xacmlResponseDto = contextHandler.enforcePolicy(xacmlRequestDto);
+                logger.debug(xacmlResponseDto::toString);
 
                 if (xacmlResponseDto.getPdpDecision().equalsIgnoreCase(PERMIT)) {
                     XacmlResult xacmlResult = XacmlResult.from(xacmlRequestDto, xacmlResponseDto);
@@ -178,24 +181,28 @@ public class PolicyEnforcementPointImpl implements PolicyEnforcementPoint {
                     DSSRequest dssRequest = new DSSRequest();
                     dssRequest.setDocument(documentStr.getBytes(StandardCharsets.UTF_8));
                     dssRequest.setXacmlResult(xacmlResult);
+                    logger.debug(dssRequest::toString);
                     DSSResponse dssResponse = dssService.segmentDocument(dssRequest);
+                    logger.debug(dssResponse::toString);
 
                     String segmentedDocumentStr = new String(dssResponse.getSegmentedDocument());
+                    logger.debug(() -> "segmented: " + segmentedDocumentStr);
                     final Document segmentedClinicalDocumentDoc = documentXmlConverter.loadDocument(segmentedDocumentStr);
                     // xslt transformation
                     final String xslUrl = Thread.currentThread().getContextClassLoader().getResource(CCD_XSL_PATH).toString();
 
                     final String output = xmlTransformer.transform(segmentedClinicalDocumentDoc, xslUrl, Optional.<Params>empty(), Optional.<URIResolver>empty());
                     patientDocument.setDocument(output);
+                    logger.debug(() -> "transformed: " + output);
 
                     segmentedDocumentsResponseDto = toSegmentedDocumentResponse(documentsResponseDto);
                 } else {
-                    log.info("PDP DENY decision for: " + patientDocument.getName());
+                    logger.info("PDP DENY decision for: " + patientDocument.getName());
                 }
             }
 
         } catch (Exception e) {
-            log.error(e.getStackTrace().toString());
+            logger.error(e.getMessage(), e);
         } finally {
             return segmentedDocumentsResponseDto;
         }
@@ -257,11 +264,11 @@ public class PolicyEnforcementPointImpl implements PolicyEnforcementPoint {
                 String value = node.getNodeValue();
                 return optionalNode.map(Node::getNodeValue);
             } else {
-                log.error("Cannot find provider NPI in document.");
+                logger.error("Cannot find provider NPI in document.");
             }
 
         } catch (DocumentAccessorException e) {
-            log.error(e.getStackTrace().toString());
+            logger.error(e.getStackTrace().toString());
         }
         return Optional.empty();
     }
