@@ -6,9 +6,10 @@ info:
   component: PEP API
 pep:
   providers:
-    # username -> NPI mappings for provider accounts
+    # username -> NPI mappings for provider user accounts
     users:
       pgchd@gmail.com: 1669506317
+  # IExHub connection configuration
   iexhub:
     url: https://localhost:8443/iexhub/services/GetPatientData/ccd
     param-key: ssoauth
