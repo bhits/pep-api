@@ -27,6 +27,7 @@ package gov.samhsa.c2s.pep.infrastructure.dto;
 
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlEnumValue;
+import java.util.Arrays;
 
 /**
  * The Enum SubjectPurposeOfUse.
@@ -50,20 +51,10 @@ public enum SubjectPurposeOfUse {
         return purpose;
     }
 
-    public static SubjectPurposeOfUse fromValue(String v) {
-        return valueOf(v);
-    }
-
     public static SubjectPurposeOfUse fromPurpose(String purposeOfUse) {
-        for (SubjectPurposeOfUse p : SubjectPurposeOfUse.values()) {
-            if (p.getPurpose().equals(purposeOfUse)) {
-                return p;
-            }
-        }
-        StringBuilder builder = new StringBuilder();
-        builder.append("The abbreviation '");
-        builder.append(purposeOfUse);
-        builder.append("' is not defined in this enum.");
-        throw new IllegalArgumentException(builder.toString());
+        return Arrays.stream(SubjectPurposeOfUse.values())
+                .filter(p -> p.getPurpose().equals(purposeOfUse))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("The purposeOfUse '" + purposeOfUse + "' is not defined in this enum."));
     }
 }
