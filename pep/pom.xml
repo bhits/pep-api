@@ -38,7 +38,7 @@
     </ciManagement>
 
     <scm>
-        <url>https://github.com/BHITS/pep-api</url>
+        <url>https://github.com/bhits/pep-api</url>
         <connection>scm:git:${project.scm.url}.git</connection>
         <developerConnection>scm:git:${project.scm.url}.git</developerConnection>
     </scm>
