@@ -11,7 +11,7 @@ pep:
       pgchd@gmail.com: 1669506317
   # IExHub connection configuration
   iexhub:
-    url: https://localhost:8443/iexhub/services/GetPatientData/ccd
+    url: http://localhost:8080/iexhub/services/GetPatientData/ccd
     param-key: ssoauth
     param-value-suffix: PatientId=PATIENT_ID_VALUE&LastName=&FirstName=&MiddleName=&DateOfBirth=&PatientGender=&MotherMaidenName=&AddressStreet=&AddressCity=&AddressState=&AddressPostalCode=&OtherIDsScopingOrganization=&StartDate=&EndDate=
   #TODO: Remove this constraint when metadata is also returned from IExHub (filter by document type/format instead)
