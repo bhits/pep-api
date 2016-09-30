@@ -15,5 +15,4 @@ public interface ContextHandlerService {
 
     @RequestMapping(value = "/policyEnforcement", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     XacmlResponseDto enforcePolicy(@Valid @RequestBody XacmlRequestDto xacmlRequest);
-
 }

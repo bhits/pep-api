@@ -6,14 +6,19 @@ info:
   component: PEP API
 pep:
   providers:
+    # username -> NPI mappings for provider user accounts
     users:
       pgchd@gmail.com: 1669506317
+  # IExHub connection configuration
   iexhub:
-      url: https://localhost:8443/iexhub/services/GetPatientData/ccd
-      param-key: ssoauth
-      param-value-suffix: PatientId=PATIENT_ID_VALUE&LastName=&FirstName=&MiddleName=&DateOfBirth=&PatientGender=&MotherMaidenName=&AddressStreet=&AddressCity=&AddressState=&AddressPostalCode=&OtherIDsScopingOrganization=&StartDate=&EndDate=
+    url: https://localhost:8443/iexhub/services/GetPatientData/ccd
+    param-key: ssoauth
+    param-value-suffix: PatientId=PATIENT_ID_VALUE&LastName=&FirstName=&MiddleName=&DateOfBirth=&PatientGender=&MotherMaidenName=&AddressStreet=&AddressCity=&AddressState=&AddressPostalCode=&OtherIDsScopingOrganization=&StartDate=&EndDate=
+  #TODO: Remove this constraint when metadata is also returned from IExHub (filter by document type/format instead)
   patient:
-      document-name: 1.1.1^SallyShare CCDA1
+    document-name: 1.1.1^SallyShare CCDA1
+  # the XPAth that will be used to locate intermediary NPI in patient documents
+  author-npi-xpath: "/hl7:ClinicalDocument/hl7:author[1]/hl7:assignedAuthor[1]/hl7:id[@root='2.16.840.1.113883.4.6'][1]/@extension"
 eureka:
   instance:
     instance-id: ${spring.cloud.client.hostname}:${spring.application.name}:${spring.application.instance_id:${random.value}}
@@ -23,8 +28,9 @@ eureka:
     healthcheck:
       enabled: true
     service-url:
-      defaultZone: https://localhost:8761/eureka/
-# TODO: until finding a better solution, disable hystrix command timeout. See https://github.com/spring-cloud/spring-cloud-netflix/issues/321#issuecomment-97727313
+      # endpoint for discovery-server, pass '--eureka.client.protocol=https' if discovery-server is running on https
+      defaultZone: ${eureka.client.protocol:http}://localhost:8761/eureka/
+#TODO: until finding a better solution, disable hystrix command timeout. See https://github.com/spring-cloud/spring-cloud-netflix/issues/321#issuecomment-97727313
 hystrix.command.default.execution.timeout.enabled: false
 ribbon:
   ReadTimeout: 50000
@@ -34,6 +40,7 @@ security:
   oauth2:
     resource:
       jwt:
+        # public key to validate the token signed by authorization server
         keyValue:
                          -----BEGIN PUBLIC KEY-----
                          MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0m59l2u9iDnMbrXHfqkO
@@ -47,8 +54,10 @@ security:
     client:
       client-id: pep
 ---
+# enables ssl in this service when activated
 spring.profiles: ssl
 server:
+  # configure keystore and keystore password for ssl per environment
   ssl:
     key-store: /ssl_keystore.keystore
     key-store-password: changeit
@@ -58,6 +67,7 @@ eureka:
     secure-port-enabled: true
     non-secure-port-enabled: false
 ---
+# enables ssl and adds /pep context path when activated
 spring.profiles: standalone-ssl
 spring:
   profiles:
@@ -65,11 +75,11 @@ spring:
 server:
   context-path: /pep
 ---
-spring:
-  profiles: docker
+# updates configuration for docker environment
+spring.profiles: docker
 eureka:
   client:
     service-url:
-      defaultZone: https://discovery-server.c2s.com:8761/eureka/
+      defaultZone: ${eureka.client.protocol:http}://discovery-server.c2s.com:8761/eureka/
   instance:
     prefer-ip-address: true

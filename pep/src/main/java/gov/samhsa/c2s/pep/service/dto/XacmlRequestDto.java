@@ -13,32 +13,40 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @Data
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlRootElement(name="XacmlRequest")
+@XmlRootElement(name = "XacmlRequest")
 public class XacmlRequestDto {
 
-    /** The recipient subject npi. */
-    @XmlElement(name="RecipientNpi")
+    /**
+     * The recipient subject npi.
+     */
+    @XmlElement(name = "RecipientNpi")
     @NotBlank
     private String recipientNpi;
 
-    /** The intermediary subject npi. */
-    @XmlElement(name="IntermediaryNpi")
+    /**
+     * The intermediary subject npi.
+     */
+    @XmlElement(name = "IntermediaryNpi")
     @NotBlank
     private String intermediaryNpi;
 
-    /** The purpose of use. */
-    @XmlElement(name="PurposeOfUse")
+    /**
+     * The purpose of use.
+     */
+    @XmlElement(name = "PurposeOfUse")
     @NotNull
     private SubjectPurposeOfUse purposeOfUse;
 
-    /** The patient id. */
-    @XmlElement(name="PatientId")
+    /**
+     * The patient id.
+     */
+    @XmlElement(name = "PatientId")
     @NotNull
     private PatientIdDto patientId;
 
-    /** The message id. */
-    @XmlElement(name="MessageId")
+    /**
+     * The message id.
+     */
+    @XmlElement(name = "MessageId")
     private String messageId;
-
-
 }

@@ -12,7 +12,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 @EnableFeignClients
 public class PepApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(PepApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(PepApplication.class, args);
+    }
 }
