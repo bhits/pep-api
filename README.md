@@ -1,6 +1,6 @@
 # Policy Enforcement Point API
 
-The Policy Enforcement Point (PEP) API is a RESTful web service for the Access Control Service (ACS) entry point. PEP delegates the access decision to the Context Handler API, and it utilizes the Document Segmentation Service (DSS) for segmenting CCD documents according to a patient's granular consent. PEP gives the same response for both *"No applicable consents"* and *"No documents found"* cases to avoid exposing the existence of a patient's consent.
+The Policy Enforcement Point (PEP) API is a RESTful web service for the Access Control Service (ACS) entry point. PEP delegates the access decision to the Context Handler API, and it utilizes the Document Segmentation Service ([DSS](https://github.com/FEISystems/dss-api)) for segmenting CCD documents according to a patient's granular consent. PEP gives the same response for both *"No applicable consents"* and *"No documents found"* cases to avoid exposing the existence of a patient's consent.
 
 ## Build
 
