@@ -43,6 +43,18 @@
         <developerConnection>scm:git:${project.scm.url}.git</developerConnection>
     </scm>
 
+    <distributionManagement>
+        <repository>
+            <id>deployment</id>
+            <name>Internal Releases</name>
+            <url>http://${maven.nexus.servername}/repository/releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>deployment</id>
+            <name>Internal Releases</name>
+            <url>http://${maven.nexus.servername}/repository/snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -56,45 +68,13 @@
         <java.version>1.8</java.version>
         <spring.cloud.version>Brixton.RELEASE</spring.cloud.version>
         <lombok.version>1.16.6</lombok.version>
-        <c2s.common-libraries.version>1.7.0</c2s.common-libraries.version>
+        <c2s.common-libraries.version>1.6.0</c2s.common-libraries.version>
         <c2s.document-transformer.version>1.4.0</c2s.document-transformer.version>
         <saxon-HE.version>9.6.0-3</saxon-HE.version>
         <!-- Test -->
         <jsonpath.version>2.2.0</jsonpath.version>
         <docker.maven.version>0.4.3</docker.maven.version>
     </properties>
-
-    <profiles>
-        <profile>
-            <id>external-build</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <repositories>
-                <repository>
-                    <id>repo.spring.io</id>
-                    <name>Spring Milestone Repository</name>
-                    <url>https://repo.spring.io/libs-milestone-local</url>
-                </repository>
-            </repositories>
-        </profile>
-        <profile>
-            <id>bhits-mvn-repo</id>
-            <distributionManagement>
-                <repository>
-                    <id>deployment</id>
-                    <name>Internal Releases</name>
-                    <url>http://${maven.nexus.servername}/repository/releases/</url>
-                </repository>
-                <snapshotRepository>
-                    <id>deployment</id>
-                    <name>Internal Releases</name>
-                    <url>http://${maven.nexus.servername}/repository/snapshots/</url>
-                </snapshotRepository>
-            </distributionManagement>
-        </profile>
-    </profiles>
-
 
     <dependencies>
         <dependency>
