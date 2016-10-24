@@ -5,7 +5,7 @@ The PEP API is a RESTful web service for the Access Control Service entry point.
 
 # Supported Tags and Respective `Dockerfile` Links
 
-[`1.16.0`](https://github.com/bhits/pep-api/blob/master/pep/src/main/docker/Dockerfile),[`latest`](https://github.com/bhits/pep-api/blob/master/pep/src/main/docker/Dockerfile)[(1.16.0/Dockerfile)](https://github.com/bhits/pep-api/blob/master/pep/src/main/docker/Dockerfile)
+[`1.7.0`](https://github.com/bhits/pep-api/blob/master/pep/src/main/docker/Dockerfile),[`latest`](https://github.com/bhits/pep-api/blob/master/pep/src/main/docker/Dockerfile)[(1.7.0/Dockerfile)](https://github.com/bhits/pep-api/blob/master/pep/src/main/docker/Dockerfile)
 
 For more information about this image, the source code, and its history, please see the [GitHub repository](https://github.com/bhits/pep-api).
 
