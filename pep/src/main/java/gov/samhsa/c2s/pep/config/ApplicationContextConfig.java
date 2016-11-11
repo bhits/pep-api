@@ -10,6 +10,7 @@ import gov.samhsa.c2s.common.marshaller.SimpleMarshaller;
 import gov.samhsa.c2s.common.marshaller.SimpleMarshallerImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestTemplate;
 
 @Configuration
 public class ApplicationContextConfig {
@@ -32,5 +33,10 @@ public class ApplicationContextConfig {
     @Bean
     public SimpleMarshaller simpleMarshallerImpl() {
         return new SimpleMarshallerImpl();
+    }
+
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
     }
 }
