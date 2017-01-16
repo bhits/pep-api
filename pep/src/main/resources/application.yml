@@ -4,21 +4,22 @@ logging:
   file: /java/C2S_LOGS/pep/pep.log
 info:
   component: PEP API
-pep:
-  providers:
-    # username -> NPI mappings for provider user accounts
-    users:
-      pgchd@gmail.com: 1669506317
-  # IExHub connection configuration
-  iexhub:
-    url: http://localhost:8080/iexhub/services/GetPatientData/ccd
-    param-key: ssoauth
-    param-value-suffix: PatientId=PATIENT_ID_VALUE&LastName=&FirstName=&MiddleName=&DateOfBirth=&PatientGender=&MotherMaidenName=&AddressStreet=&AddressCity=&AddressState=&AddressPostalCode=&OtherIDsScopingOrganization=&StartDate=&EndDate=
-  #TODO: Remove this constraint when metadata is also returned from IExHub (filter by document type/format instead)
-  patient:
-    document-name: 1.1.1^SallyShare CCDA1
-  # the XPAth that will be used to locate intermediary NPI in patient documents
-  author-npi-xpath: "/hl7:ClinicalDocument/hl7:author[1]/hl7:assignedAuthor[1]/hl7:id[@root='2.16.840.1.113883.4.6'][1]/@extension"
+c2s:
+  pep:
+    providers:
+      # username -> NPI mappings for provider user accounts
+      users:
+        pgchd@gmail.com: 1669506317
+    # IExHub connection configuration
+    iexhub:
+      url: http://localhost:8080/iexhub/services/GetPatientData/ccd
+      param-key: ssoauth
+      param-value-suffix: PatientId=PATIENT_ID_VALUE&LastName=&FirstName=&MiddleName=&DateOfBirth=&PatientGender=&MotherMaidenName=&AddressStreet=&AddressCity=&AddressState=&AddressPostalCode=&OtherIDsScopingOrganization=&StartDate=&EndDate=
+    #TODO: Remove this constraint when metadata is also returned from IExHub (filter by document type/format instead)
+    patient:
+      document-name: 1.1.1^SallyShare CCDA1
+    # the XPAth that will be used to locate intermediary NPI in patient documents
+    author-npi-xpath: "/hl7:ClinicalDocument/hl7:author[1]/hl7:assignedAuthor[1]/hl7:id[@root='2.16.840.1.113883.4.6'][1]/@extension"
 #TODO: until finding a better solution, disable hystrix command timeout. See https://github.com/spring-cloud/spring-cloud-netflix/issues/321#issuecomment-97727313
 hystrix.command.default.execution.timeout.enabled: false
 ribbon:
