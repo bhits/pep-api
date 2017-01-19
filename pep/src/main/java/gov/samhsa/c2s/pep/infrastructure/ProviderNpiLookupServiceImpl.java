@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
-@ConfigurationProperties(prefix = "pep.providers")
+@ConfigurationProperties(prefix = "c2s.pep.providers")
 public class ProviderNpiLookupServiceImpl implements ProviderNpiLookupService {
     private Map<String, String> users = new HashMap<>();
 

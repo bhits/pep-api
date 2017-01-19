@@ -32,6 +32,8 @@ public class SecurityConfig {
                 http.authorizeRequests()
                         .antMatchers(HttpMethod.POST, "/access/**").access(hasScope("pep.patient_read"))
                         .antMatchers(HttpMethod.GET, "/documents/**").access(hasScope("pep.patient_read"))
+                        .antMatchers(HttpMethod.GET, "/management/**").access(hasScope("pep.management"))
+                        .antMatchers(HttpMethod.POST, "/management/**").access(hasScope("pep.management"))
                         .anyRequest().denyAll();
             }
         };

@@ -8,6 +8,7 @@ import gov.samhsa.c2s.common.document.converter.DocumentXmlConverter;
 import gov.samhsa.c2s.common.document.transformer.XmlTransformer;
 import gov.samhsa.c2s.common.log.Logger;
 import gov.samhsa.c2s.common.log.LoggerFactory;
+import gov.samhsa.c2s.pep.config.PepProperties;
 import gov.samhsa.c2s.pep.infrastructure.ContextHandlerService;
 import gov.samhsa.c2s.pep.infrastructure.DssService;
 import gov.samhsa.c2s.pep.infrastructure.ProviderNpiLookupService;
@@ -19,7 +20,6 @@ import gov.samhsa.c2s.pep.service.exception.DocumentNotFoundException;
 import gov.samhsa.c2s.pep.service.exception.InternalServerErrorException;
 import gov.samhsa.c2s.pep.service.exception.ProviderNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -41,20 +41,8 @@ public class PolicyEnforcementPointImpl implements PolicyEnforcementPoint {
 
     private final Logger logger = LoggerFactory.getLogger(this);
 
-    @Value("${pep.iexhub.param-key}")
-    private String iexhubParameterKey;
-
-    @Value("${pep.iexhub.param-value-suffix}")
-    private String iexhubParameterSuffix;
-
-    @Value("${pep.iexhub.url}")
-    private String iexhubUrl;
-
-    @Value("${pep.author-npi-xpath}")
-    private String authorNpiXPath;
-
-    @Value("${pep.patient.document-name}")
-    private String patientDocumentName;
+    @Autowired
+    private PepProperties pepProperties;
 
     @Autowired
     private ContextHandlerService contextHandler;
@@ -116,11 +104,11 @@ public class PolicyEnforcementPointImpl implements PolicyEnforcementPoint {
 
             final String parameters = composeIExHubParameter(mrn, domain);
             final HttpHeaders headers = new HttpHeaders();
-            headers.set(iexhubParameterKey, parameters);
+            headers.set(pepProperties.getIexhub().getParamKey(), parameters);
             final HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
 
             // Calling IExHub to get ccd document
-            ResponseEntity<DocumentsResponseDto> response = restTemplate.exchange(iexhubUrl, HttpMethod.GET, entity, DocumentsResponseDto.class);
+            ResponseEntity<DocumentsResponseDto> response = restTemplate.exchange(pepProperties.getIexhub().getUrl(), HttpMethod.GET, entity, DocumentsResponseDto.class);
 
             if (!response.getStatusCode().equals(HttpStatus.OK)) {
                 throw new DocumentNotFoundException("Cannot get CCD document from IExhub.");
@@ -130,7 +118,7 @@ public class PolicyEnforcementPointImpl implements PolicyEnforcementPoint {
             logger.debug(documentsResponseDto::toString);
 
             // Filtering for Sally Share documents
-            final List<PatientDocument> collect = documentsResponseDto.getDocuments().stream().filter(doc -> patientDocumentName.equals(doc.getName())).collect(toList());
+            final List<PatientDocument> collect = documentsResponseDto.getDocuments().stream().filter(doc -> pepProperties.getPatient().getDocumentName().equals(doc.getName())).collect(toList());
             documentsResponseDto.setDocuments(collect);
 
             for (PatientDocument patientDocument : documentsResponseDto.getDocuments()) {
@@ -240,6 +228,7 @@ public class PolicyEnforcementPointImpl implements PolicyEnforcementPoint {
     }
 
     private String composeIExHubParameter(String mrn, String domain) {
+        String iexhubParameterSuffix = pepProperties.getIexhub().getParamValueSuffix();
         if (mrn != null && domain != null && iexhubParameterSuffix != null) {
             String patientId = mrn + "^^^&" + domain + "&ISO";
             return iexhubParameterSuffix.replace("PATIENT_ID_VALUE", "'" + patientId + "'");
@@ -255,7 +244,7 @@ public class PolicyEnforcementPointImpl implements PolicyEnforcementPoint {
 
     private Optional<Node> getAuthorNpi(Document document) {
         try {
-            return documentAccessor.getNode(document, authorNpiXPath);
+            return documentAccessor.getNode(document, pepProperties.getAuthorNpiXpath());
         } catch (DocumentAccessorException e) {
             logger.error(e.getMessage());
             logger.debug(e.getMessage(), e);
