@@ -5,7 +5,7 @@ The PEP API is a RESTful web service for the Access Control Service entry point.
 
 # Supported Tags and Respective `Dockerfile` Links
 
-[`1.7.0`](https://github.com/bhits/pep-api/blob/master/pep/src/main/docker/Dockerfile),[`latest`](https://github.com/bhits/pep-api/blob/master/pep/src/main/docker/Dockerfile)[(1.7.0/Dockerfile)](https://github.com/bhits/pep-api/blob/master/pep/src/main/docker/Dockerfile)
+[`1.10.0`](https://github.com/bhits/pep-api/blob/master/pep/src/main/docker/Dockerfile),[`latest`](https://github.com/bhits/pep-api/blob/master/pep/src/main/docker/Dockerfile)[(1.10.0/Dockerfile)](https://github.com/bhits/pep-api/blob/master/pep/src/main/docker/Dockerfile)
 
 For more information about this image, the source code, and its history, please see the [GitHub repository](https://github.com/bhits/pep-api).
 
@@ -23,7 +23,7 @@ Be sure to familiarize yourself with the repository's [README.md](https://github
 
 `docker run  --name pep -d bhits/pep:latest <additional program arguments>`
 
-*NOTE: In order for this API to fully function as a microservice in the Consent2Share application, it is required to setup the dependency microservices and support level infrastructure. Please refer to the [Consent2Share Deployment Guide](https://github.com/bhits/consent2share/releases/download/2.0.0/c2s-deployment-guide.pdf) for instructions to setup the Consent2Share infrastructure.*
+*NOTE: In order for this API to fully function as a microservice in the Consent2Share application, it is required to setup the dependency microservices and support level infrastructure. Please refer to the [Consent2Share Deployment Guide](https://github.com/bhits/consent2share/releases/download/2.1.0/c2s-deployment-guide.pdf) for instructions to setup the Consent2Share infrastructure.*
 
 
 ## Configure
