@@ -49,3 +49,7 @@ eureka:
       defaultZone: ${eureka.client.protocol:http}://discovery-server.c2s.com:8761/eureka/
   instance:
     prefer-ip-address: true
+c2s:
+  pep:
+    iexhub:
+        url: http://iexhub.c2s.com:8080/iexhub/services/GetPatientData/ccd
