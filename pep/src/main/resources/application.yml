@@ -36,3 +36,10 @@ spring:
     include: ssl-default
 server:
   context-path: /pep
+---
+# updates configuration for docker environment
+spring.profiles: docker
+c2s:
+  pep:
+    iexhub:
+      url: http://iexhub.c2s.com:8080/iexhub/services/GetPatientData/ccd
