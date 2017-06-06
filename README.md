@@ -1,6 +1,9 @@
-# Policy Enforcement Point API
+# Policy Enforcement Point Servicve
 
-The Policy Enforcement Point (PEP) API is a RESTful web service for the Access Control Service (ACS) entry point. The PEP delegates the access decision to the Context Handler API, and it utilizes the Document Segmentation Service ([DSS](https://github.com/bhits/dss-api)) for segmenting CCD documents according to a patient's granular consent. PEP gives the same response for both *"No applicable consents"* and *"No documents found"* cases to avoid exposing the existence of a patient's consent.
+The Policy Enforcement Point (PEP) Service is one of the core components of the Consent2Share(C2S) application. 
+The PEP delegates the access decision to the Context Handler API, and it utilizes the Document Segmentation Service 
+([DSS](https://github.com/bhits-dev/dss-api)) for segmenting CCD documents according to a patient's granular consent. 
+PEP gives the same response for both *"No applicable consents"* and *"No documents found"* cases to avoid exposing the existence of a patient's consent.
 
 ## Build
 
@@ -18,7 +21,7 @@ To build the project, navigate to the folder that contains `pom.xml` file using 
 + To build a JAR:
     + For Windows, run `mvnw.cmd clean install`
     + For *nix systems, run `mvnw clean install`
-+ To build a Docker Image (this will create an image with `bhits/pep:latest` tag):
++ To build a Docker Image (this will create an image with `bhitsdev/pep-api:latest` tag):
     + For Windows, run `mvnw.cmd clean package docker:build`
     + For *nix systems, run `mvnw clean package docker:build`
 
@@ -29,14 +32,14 @@ To build the project, navigate to the folder that contains `pom.xml` file using 
 ### Commands
 
 This is a [Spring Boot](https://projects.spring.io/spring-boot/) project and serves the API via an embedded Tomcat instance, therefore there is no need for a separate application server to run this service.
-+ Run as a JAR file: `java -jar pep-x.x.x-SNAPSHOT.jar <additional program arguments>`
-+ Run as a Docker Container: `docker run -d bhits/pep:latest <additional program arguments>`
++ Run as a JAR file: `java -jar pep-api-x.x.x-SNAPSHOT.jar <additional program arguments>`
++ Run as a Docker Container: `docker run -d bhitsdev/pep-api:latest <additional program arguments>`
 
-*NOTE: In order for this API to fully function as a microservice in C2S Application, it is also required to setup the dependency microservices and support level infrastructure. Please refer to the [C2S Deployment Guide](https://github.com/bhits/consent2share/releases/download/2.1.0/c2s-deployment-guide.pdf) for instructions to setup the C2S infrastructure.*
+*NOTE: In order for this API to fully function as a microservice in C2S Application, it is also required to setup the dependency microservices and support level infrastructure. Please refer to the [C2S Deployment Guide](https://github.com/bhits-dev/consent2share/releases/download/2.1.0/c2s-deployment-guide.pdf) for instructions to setup the C2S infrastructure.*
 
 ## Configure
 
-This API utilizes [`Configuration Server`](https://github.com/bhits/config-server) which is based on [Spring Cloud Config](https://github.com/spring-cloud/spring-cloud-config) to manage externalized configuration, which is stored in a `Configuration Data Git Repository`. We provide a [`Default Configuration Data Git Repository`]( https://github.com/bhits/c2s-config-data).
+This API utilizes [`Configuration Server`](https://github.com/bhits-dev/config-server) which is based on [Spring Cloud Config](https://github.com/spring-cloud/spring-cloud-config) to manage externalized configuration, which is stored in a `Configuration Data Git Repository`. We provide a [`Default Configuration Data Git Repository`]( https://github.com/bhits-dev/c2s-config-data).
 
 This API can run with the default configuration, which is targeted for a local development environment. Default configuration data is from three places: `bootstrap.yml`, `application.yml`, and the data which `Configuration Server` reads from `Configuration Data Git Repository`. Both `bootstrap.yml` and `application.yml` files are located in the `resources` folder of this source code.
 
@@ -48,20 +51,20 @@ Also, please refer to [Spring Cloud Config Documentation](https://cloud.spring.i
 
 #### Override a Configuration Using Program Arguments While Running as a JAR:
 
-+ `java -jar pep-x.x.x-SNAPSHOT.jar --server.port=80 --logging.file=/logs/pep.log`
++ `java -jar pep-api-x.x.x-SNAPSHOT.jar --server.port=80 --logging.file=/logs/pep-api.log`
 
 #### Override a Configuration Using Program Arguments While Running as a Docker Container:
 
-+ `docker run -d bhits/pep:latest --server.port=80 --logging.file=/logs/pep.log`
++ `docker run -d bhitsdev/pep-api:latest --server.port=80 --logging.file=/logs/pep-api.log`
 
 + In a `docker-compose.yml`, this can be provided as:
 ```yml
 version: '2'
 services:
 ...
-  pep.c2s.com:
-    image: "bhits/pep:latest"
-    command: ["--server.port=80","--logging.file=/logs/pep.log"]
+  pep-api.c2s.com:
+    image: "bhitsdev/pep-api:latest"
+    command: ["--server.port=80","--logging.file=/logs/pep-api.log"]
 ...
 ```
 *NOTE: Please note that these additional arguments will be appended to the default `ENTRYPOINT` specified in the `Dockerfile` unless the `ENTRYPOINT` is overridden.*
@@ -72,18 +75,18 @@ For simplicity in development and testing environments, SSL is **NOT** enabled b
 
 #### Enable SSL While Running as a JAR
 
-+ `java -jar pep-x.x.x-SNAPSHOT.jar --spring.profiles.active=ssl --server.ssl.key-store=/path/to/ssl_keystore.keystore --server.ssl.key-store-password=strongkeystorepassword`
++ `java -jar pep-api-x.x.x-SNAPSHOT.jar --spring.profiles.active=ssl --server.ssl.key-store=/path/to/ssl_keystore.keystore --server.ssl.key-store-password=strongkeystorepassword`
 
 #### Enable SSL While Running as a Docker Container
 
-+ `docker run -d -v "/path/on/dockerhost/ssl_keystore.keystore:/path/to/ssl_keystore.keystore" bhits/pep:latest --spring.profiles.active=ssl --server.ssl.key-store=/path/to/ssl_keystore.keystore --server.ssl.key-store-password=strongkeystorepassword`
++ `docker run -d -v "/path/on/dockerhost/ssl_keystore.keystore:/path/to/ssl_keystore.keystore" bhitsdev/pep-api:latest --spring.profiles.active=ssl --server.ssl.key-store=/path/to/ssl_keystore.keystore --server.ssl.key-store-password=strongkeystorepassword`
 + In a `docker-compose.yml`, this can be provided as:
 ```yml
 version: '2'
 services:
 ...
-  pep.c2s.com:
-    image: "bhits/pep:latest"
+  pep-api.c2s.com:
+    image: "bhitsdev/pep-api:latest"
     command: ["--spring.profiles.active=ssl","--server.ssl.key-store=/path/to/ssl_keystore.keystore", "--server.ssl.key-store-password=strongkeystorepassword"]
     volumes:
       - /path/on/dockerhost/ssl_keystore.keystore:/path/to/ssl_keystore.keystore
@@ -94,7 +97,7 @@ services:
 
 ### Override Java CA Certificates Store In Docker Environment
 
-Java has a default CA Certificates Store that allows it to trust well-known certificate authorities. For development and testing purposes, one might want to trust additional self-signed certificates. In order to override the default Java CA Certificates Store in a Docker container, one can mount a custom `cacerts` file over the default one in the Docker image as follows: `docker run -d -v "/path/on/dockerhost/to/custom/cacerts:/etc/ssl/certs/java/cacerts" bhits/pep:latest`
+Java has a default CA Certificates Store that allows it to trust well-known certificate authorities. For development and testing purposes, one might want to trust additional self-signed certificates. In order to override the default Java CA Certificates Store in a Docker container, one can mount a custom `cacerts` file over the default one in the Docker image as follows: `docker run -d -v "/path/on/dockerhost/to/custom/cacerts:/etc/ssl/certs/java/cacerts" bhitsdev/pep-api:latest`
 
 *NOTE: The `cacerts` references given in the both sides of volume mapping above are files, not directories.*
 
@@ -110,6 +113,6 @@ If you have any questions, comments, or concerns please see [Consent2Share](http
 
 ## Report Issues
 
-Please use [GitHub Issues](https://github.com/bhits/pep-api/issues) page to report issues.
+Please use [GitHub Issues](https://github.com/bhits-dev/pep-api/issues) page to report issues.
 
 [//]: # (License)
