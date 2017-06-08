@@ -1,6 +1,5 @@
-package gov.samhsa.c2s.pep.service.dto;
+package gov.samhsa.c2s.pepapi.infrastructure.dto;
 
-import gov.samhsa.c2s.pep.infrastructure.dto.DSSResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

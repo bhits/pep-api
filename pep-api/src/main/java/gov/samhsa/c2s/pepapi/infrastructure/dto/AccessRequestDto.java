@@ -1,8 +1,8 @@
-package gov.samhsa.c2s.pep.service.dto;
+package gov.samhsa.c2s.pepapi.infrastructure.dto;
 
-import gov.samhsa.c2s.pep.infrastructure.dto.DSSRequest;
-import gov.samhsa.c2s.pep.infrastructure.dto.XacmlRequestDto;
-import gov.samhsa.c2s.pep.infrastructure.dto.XacmlResult;
+import gov.samhsa.c2s.pepapi.infrastructure.dto.DSSRequest;
+import gov.samhsa.c2s.pepapi.infrastructure.dto.XacmlRequestDto;
+import gov.samhsa.c2s.pepapi.infrastructure.dto.XacmlResult;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

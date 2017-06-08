@@ -1,7 +1,7 @@
-package gov.samhsa.c2s.pep.infrastructure;
+package gov.samhsa.c2s.pepapi.infrastructure;
 
-import gov.samhsa.c2s.pep.service.dto.AccessRequestDto;
-import gov.samhsa.c2s.pep.service.dto.AccessResponseDto;
+import gov.samhsa.c2s.pepapi.infrastructure.dto.AccessRequestDto;
+import gov.samhsa.c2s.pepapi.infrastructure.dto.AccessResponseDto;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;

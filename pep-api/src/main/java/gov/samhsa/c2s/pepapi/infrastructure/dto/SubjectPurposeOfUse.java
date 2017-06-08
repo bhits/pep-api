@@ -23,54 +23,38 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
-package gov.samhsa.c2s.pep.infrastructure.dto;
+package gov.samhsa.c2s.pepapi.infrastructure.dto;
 
-import lombok.*;
-import org.hibernate.validator.constraints.NotBlank;
+import javax.xml.bind.annotation.XmlEnum;
+import javax.xml.bind.annotation.XmlEnumValue;
+import java.util.Arrays;
 
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+/**
+ * The Enum SubjectPurposeOfUse.
+ */
+@XmlEnum
+public enum SubjectPurposeOfUse {
+    @XmlEnumValue("TREATMENT")
+    HEALTHCARE_TREATMENT("TREATMENT"),
+    @XmlEnumValue("PAYMENT")
+    PAYMENT("PAYMENT"),
+    @XmlEnumValue("RESEARCH")
+    RESEARCH("RESEARCH");
 
-@Data
-@Builder(toBuilder = true)
-@NoArgsConstructor
-@AllArgsConstructor
-@XmlRootElement(name = "xacmlResult")
-@XmlAccessorType(XmlAccessType.FIELD)
-public class XacmlResult {
+    private final String purpose;
 
-    @NotBlank
-    private String pdpDecision;
+    SubjectPurposeOfUse(String p) {
+        purpose = p;
+    }
 
-    @NotNull
-    @XmlElement(name = "purposeOfUse")
-    private SubjectPurposeOfUse subjectPurposeOfUse;
+    public String getPurpose() {
+        return purpose;
+    }
 
-    private String messageId;
-
-    private String homeCommunityId;
-
-    @NotNull
-    @XmlElement(name = "pdpObligation")
-    @Singular
-    private List<String> pdpObligations = new ArrayList<>();
-
-    private String patientId;
-
-    public static XacmlResult from(XacmlRequestDto xacmlRequest, XacmlResponseDto xacmlResponse) {
-        return XacmlResult.builder()
-                .homeCommunityId(xacmlRequest.getPatientId().getRoot())
-                .patientId(xacmlRequest.getPatientId().getExtension())
-                .pdpDecision(xacmlResponse.getPdpDecision())
-                .pdpObligations(xacmlResponse.getPdpObligations())
-                .subjectPurposeOfUse(xacmlRequest.getPurposeOfUse())
-                .messageId(UUID.randomUUID().toString())
-                .build();
+    public static SubjectPurposeOfUse fromPurpose(String purposeOfUse) {
+        return Arrays.stream(SubjectPurposeOfUse.values())
+                .filter(p -> p.getPurpose().equals(purposeOfUse))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("The purposeOfUse '" + purposeOfUse + "' is not defined in this enum."));
     }
 }

@@ -1,8 +1,8 @@
-package gov.samhsa.c2s.pep.service;
+package gov.samhsa.c2s.pepapi.service;
 
-import gov.samhsa.c2s.pep.infrastructure.PepClient;
-import gov.samhsa.c2s.pep.service.dto.AccessRequestDto;
-import gov.samhsa.c2s.pep.service.dto.AccessResponseDto;
+import gov.samhsa.c2s.pepapi.infrastructure.PepClient;
+import gov.samhsa.c2s.pepapi.infrastructure.dto.AccessRequestDto;
+import gov.samhsa.c2s.pepapi.infrastructure.dto.AccessResponseDto;
 import org.springframework.stereotype.Service;
 
 @Service

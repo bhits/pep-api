@@ -1,4 +1,4 @@
-package gov.samhsa.c2s.pep.config;
+package gov.samhsa.c2s.pepapi.config;
 
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;

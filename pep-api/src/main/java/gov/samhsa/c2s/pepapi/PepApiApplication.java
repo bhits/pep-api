@@ -1,4 +1,4 @@
-package gov.samhsa.c2s.pep;
+package gov.samhsa.c2s.pepapi;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

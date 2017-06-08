@@ -1,4 +1,4 @@
-package gov.samhsa.c2s.pep.infrastructure.dto;
+package gov.samhsa.c2s.pepapi.infrastructure.dto;
 
 
 import lombok.AllArgsConstructor;
