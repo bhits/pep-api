@@ -14,7 +14,7 @@ import static gov.samhsa.c2s.common.oauth2.OAuth2ScopeUtils.hasScope;
 @Configuration
 public class SecurityConfig {
 
-    private static final String RESOURCE_ID = "pep";
+    private static final String RESOURCE_ID = "pepApi";
 
     @Bean
     public ResourceServerConfigurer resourceServer(SecurityProperties securityProperties) {
@@ -30,10 +30,9 @@ public class SecurityConfig {
                     http.requiresChannel().anyRequest().requiresSecure();
                 }
                 http.authorizeRequests()
-                        .antMatchers(HttpMethod.POST, "/access/**").access(hasScope("pep.patient_read"))
-                        .antMatchers(HttpMethod.GET, "/documents/**").access(hasScope("pep.patient_read"))
-                        .antMatchers(HttpMethod.GET, "/management/**").access(hasScope("pep.management"))
-                        .antMatchers(HttpMethod.POST, "/management/**").access(hasScope("pep.management"))
+                        .antMatchers(HttpMethod.POST, "/pep/access/**").access(hasScope("pepApi.write"))
+                        .antMatchers(HttpMethod.GET, "/pep/**").access(hasScope("pepApi.read"))
+                        .antMatchers(HttpMethod.POST, "/pep/**").access(hasScope("pepApi.write" ))
                         .anyRequest().denyAll();
             }
         };

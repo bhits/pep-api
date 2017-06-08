@@ -1,5 +1,5 @@
 server:
-  port: 8455
+  port: 8457
 logging:
   file: /java/C2S_LOGS/pep/pep.log
 info:
@@ -35,7 +35,7 @@ spring:
   profiles:
     include: ssl-default
 server:
-  context-path: /pep
+  context-path: /pep-api
 ---
 # updates configuration for docker environment
 spring.profiles: docker

@@ -10,9 +10,9 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 @EnableResourceServer
 @EnableDiscoveryClient
 @EnableFeignClients
-public class PepApplication {
+public class PepApiApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(PepApplication.class, args);
+        SpringApplication.run(PepApiApplication.class, args);
     }
 }

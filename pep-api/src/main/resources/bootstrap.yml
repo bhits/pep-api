@@ -1,6 +1,6 @@
 spring:
   application:
-    name: pep
+    name: pep-api
   profiles:
     active: application-default
 # Configure a symmetric key to use for Encryption and Decryption
