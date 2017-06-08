@@ -1,4 +1,4 @@
-# Policy Enforcement Point Servicve
+# Policy Enforcement Point API
 
 The Policy Enforcement Point (PEP) Service is one of the core components of the Consent2Share(C2S) application. 
 The PEP delegates the access decision to the Context Handler API, and it utilizes the Document Segmentation Service 
