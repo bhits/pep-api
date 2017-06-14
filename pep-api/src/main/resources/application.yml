@@ -1,5 +1,5 @@
 server:
-  port: 8457
+  port: 8467
 logging:
   file: /java/C2S_LOGS/pep-api/pep-api.log
 info:
