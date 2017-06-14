@@ -10,7 +10,7 @@ import javax.validation.Valid;
 import java.security.Principal;
 
 @RestController
-@RequestMapping("/pep")
+@RequestMapping("pep")
 @Slf4j
 public class PepRestController {
 
