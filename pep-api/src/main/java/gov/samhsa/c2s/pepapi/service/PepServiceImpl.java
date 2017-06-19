@@ -25,10 +25,12 @@ public class PepServiceImpl implements PepService {
 
     @Override
     public AccessResponseDto accessDocument(AccessRequestDto accessRequest) {
+        log.debug("PEP Service accessDocument Start");
         AccessResponseDto accessResponseDto;
+        log.debug("Invoking pep feign client - Start");
         try {
             accessResponseDto = pepClient.access(accessRequest);
-
+            log.debug("Invoking pep feign client - End");
         } catch (HystrixRuntimeException hystrixErr) {
             Throwable causedBy = hystrixErr.getCause();
 
@@ -52,6 +54,7 @@ public class PepServiceImpl implements PepService {
                             " PEP service");
             }
         }
+        log.debug("PEP Service accessDocument End");
         return accessResponseDto;
     }
 }
