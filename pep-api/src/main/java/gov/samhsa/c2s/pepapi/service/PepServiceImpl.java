@@ -46,7 +46,7 @@ public class PepServiceImpl implements PepService {
                             " to PEP client", causedBy);
                     throw new NoDocumentFoundException("Invalid document was passed to DSS client");
                 default:
-                    log.error("DSS client returned an unexpected instance of FeignException", causedBy);
+                    log.error("PEP client returned an unexpected instance of FeignException", causedBy);
                     throw new PepClientInterfaceException("An unknown error occurred while attempting to communicate " +
                             "with" +
                             " PEP service");
