@@ -17,7 +17,7 @@ For more information about this image, the source code, and its history, please 
 
 The PEP API is a Backend For Frontend (BFF) component of Consent2Share for PEP core Service.
 
-For more information and related downloads for Consent2Share, please visit [Consent2Share](https://bhits.github.io/consent2share/).
+For more information and related downloads for Consent2Share, please visit [Consent2Share](https://bhits-dev.github.io/consent2share/).
 # How to use this image
 
 ## Start a PEP-API instance
