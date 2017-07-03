@@ -1,30 +1,25 @@
 package gov.samhsa.c2s.pepapi.web;
 
-import gov.samhsa.c2s.pepapi.service.PepService;
 import gov.samhsa.c2s.pepapi.infrastructure.dto.AccessRequestDto;
 import gov.samhsa.c2s.pepapi.infrastructure.dto.AccessResponseDto;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
+import gov.samhsa.c2s.pepapi.service.PepService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.security.Principal;
 
 @RestController
 @RequestMapping("pep")
-@Slf4j
 public class PepRestController {
 
-   private final PepService pepService;
-
-    public PepRestController(PepService pepService) {
-        this.pepService = pepService;
-    }
-
+    @Autowired
+    private PepService pepService;
 
     @RequestMapping(value = "/access", method = RequestMethod.POST)
-    public AccessResponseDto access(@Valid @RequestBody AccessRequestDto accessRequest, Principal principal) {
+    public AccessResponseDto access(@Valid @RequestBody AccessRequestDto accessRequest) {
         return pepService.accessDocument(accessRequest);
     }
-
-
 }
