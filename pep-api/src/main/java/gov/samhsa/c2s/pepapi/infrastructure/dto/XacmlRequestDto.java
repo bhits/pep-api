@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.NotBlank;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 @Data
@@ -22,6 +23,7 @@ public class XacmlRequestDto {
     @NotNull
     private SubjectPurposeOfUse purposeOfUse;
 
+    @Valid
     @NotNull
     private PatientIdDto patientId;
 }

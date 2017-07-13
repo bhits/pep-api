@@ -12,7 +12,5 @@ import javax.validation.Valid;
 @FeignClient("pep")
 public interface PepClient {
     @RequestMapping(value = "/access", method = RequestMethod.POST)
-    public AccessResponseDto access(@Valid @RequestBody AccessRequestDto accessRequest);
-
-
+    AccessResponseDto access(@Valid @RequestBody AccessRequestDto accessRequest);
 }
