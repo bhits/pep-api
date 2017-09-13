@@ -6,9 +6,9 @@ The PEP API is a Backend For Frontend (BFF) component of Consent2Share for PEP c
 
 # Supported Source Code Tags and Current `Dockerfile` Link
 
-[`2.0.0 (latest)`](https://github.com/bhits-dev/pep-api/releases/tag/2.0.0), [`1.10.0`](https://github.com/bhits-dev/pep-api/releases/tag/1.10.0), [`1.7.0`](https://github.com/bhits-dev/pep-api/releases/tag/1.7.0)
+[`2.1.0 (latest)`](https://github.com/bhits-dev/pep-api/releases/tag/2.1.0), [`2.0.0 (latest)`](https://github.com/bhits-dev/pep-api/releases/tag/2.0.0),[`1.10.0`](https://github.com/bhits-dev/pep-api/releases/tag/1.10.0), [`1.7.0`](https://github.com/bhits-dev/pep-api/releases/tag/1.7.0)
 
-[`Current Dockerfile`](https://github.com/bhits-dev/pep-api/blob/master/pep-api/src/main/docker/Dockerfile)
+[`Current Dockerfile`](../pep-api/src/main/docker/Dockerfile)
 
 For more information about this image, the source code, and its history, please see the [GitHub repository](https://github.com/bhits-dev/pep-api).
 
