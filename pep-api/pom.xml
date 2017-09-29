@@ -36,6 +36,7 @@
         <c2s.document-accessor.version>1.16.0</c2s.document-accessor.version>
         <c2s.logger-wrapper.version>1.16.0</c2s.logger-wrapper.version>
         <c2s.common-unit.version>1.16.0</c2s.common-unit.version>
+        <logstash-logback-encoder.version>4.11</logstash-logback-encoder.version>
     </properties>
 
     <dependencies>
@@ -79,6 +80,11 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-sleuth</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.logstash.logback</groupId>
+            <artifactId>logstash-logback-encoder</artifactId>
+            <version>${logstash-logback-encoder.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.retry</groupId>
