@@ -30,12 +30,8 @@
         <docker.maven.version>0.4.3</docker.maven.version>
         <maven-enforcer-plugin.version>3.0.0-M1</maven-enforcer-plugin.version>
         <docker.maven.version>0.4.13</docker.maven.version>
-        <c2s.oauth2.version>1.16.0</c2s.oauth2.version>
-        <c2s.document-converter.version>1.16.0</c2s.document-converter.version>
-        <c2s.document-transformer.version>1.16.0</c2s.document-transformer.version>
-        <c2s.document-accessor.version>1.16.0</c2s.document-accessor.version>
-        <c2s.logger-wrapper.version>1.16.0</c2s.logger-wrapper.version>
-        <c2s.common-unit.version>1.16.0</c2s.common-unit.version>
+        <!-- TODO: upgrade common-libraries to 1.17.0 when it is released -->
+        <c2s.common-libraries.version>1.17.0-a133</c2s.common-libraries.version>
         <logstash-logback-encoder.version>4.11</logstash-logback-encoder.version>
     </properties>
 
@@ -103,17 +99,17 @@
         <dependency>
             <groupId>gov.samhsa.c2s</groupId>
             <artifactId>oauth2</artifactId>
-            <version>${c2s.oauth2.version}</version>
+            <version>${c2s.common-libraries.version}</version>
         </dependency>
         <dependency>
             <groupId>gov.samhsa.c2s</groupId>
             <artifactId>document-converter</artifactId>
-            <version>${c2s.document-converter.version}</version>
+            <version>${c2s.common-libraries.version}</version>
         </dependency>
         <dependency>
             <groupId>gov.samhsa.c2s</groupId>
             <artifactId>document-transformer</artifactId>
-            <version>${c2s.document-transformer.version}</version>
+            <version>${c2s.common-libraries.version}</version>
         </dependency>
         <dependency>
             <groupId>net.sf.saxon</groupId>
@@ -123,12 +119,12 @@
         <dependency>
             <groupId>gov.samhsa.c2s</groupId>
             <artifactId>document-accessor</artifactId>
-            <version>${c2s.document-accessor.version}</version>
+            <version>${c2s.common-libraries.version}</version>
         </dependency>
         <dependency>
             <groupId>gov.samhsa.c2s</groupId>
             <artifactId>logger-wrapper</artifactId>
-            <version>${c2s.logger-wrapper.version}</version>
+            <version>${c2s.common-libraries.version}</version>
         </dependency>
         <!-- Testing -->
         <dependency>
@@ -139,7 +135,7 @@
         <dependency>
             <groupId>gov.samhsa.c2s</groupId>
             <artifactId>common-unit</artifactId>
-            <version>${c2s.common-unit.version}</version>
+            <version>${c2s.common-libraries.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
