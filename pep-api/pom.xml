@@ -31,7 +31,7 @@
         <maven-enforcer-plugin.version>3.0.0-M1</maven-enforcer-plugin.version>
         <docker.maven.version>0.4.13</docker.maven.version>
         <!-- TODO: upgrade common-libraries to 1.17.0 when it is released -->
-        <c2s.common-libraries.version>1.17.0-a133</c2s.common-libraries.version>
+        <c2s.common-libraries.version>1.17.0-b136</c2s.common-libraries.version>
         <logstash-logback-encoder.version>4.11</logstash-logback-encoder.version>
     </properties>
 
